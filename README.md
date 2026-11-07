@@ -1,2 +1,3 @@
-# financial-rag-ml-team
-Building the systems infrastructure behind an intelligent financial document assistant. Focused on Linux systems programming, C/C++, networking, concurrent computing, storage engines, indexing, retrieval infrastructure, and performance engineering.  From low-level systems to production-grade financial technology.
+Researching and engineering the intelligence behind a financial document assistant. Exploring Retrieval-Augmented Generation (RAG), embeddings, information retrieval, hybrid search, reranking, language models, and evaluation — with an emphasis on evidence-grounded answers and reliable retrieval.
+
+From understanding retrieval to building intelligent financial systems.
