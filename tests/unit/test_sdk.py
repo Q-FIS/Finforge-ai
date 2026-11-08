@@ -6,6 +6,7 @@ import importlib
 import sys
 import tomllib
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -396,7 +397,7 @@ def test_cleanup_on_generation_failure(
     """Verify partial directory is cleaned up if file writing fails."""
 
     # Monkeypatch render_template_string to raise on a specific condition
-    def failing_render(raw_text: str, context: dict) -> str:
+    def failing_render(raw_text: str, context: dict[str, Any]) -> str:
         if "scale_factor" in raw_text:
             raise RuntimeError("Disk write simulation failure")
         return raw_text

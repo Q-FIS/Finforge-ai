@@ -1,0 +1,21 @@
+name: text-cleaner
+version: "0.1.0"
+description: Cleans text by normalizing whitespace and optionally lowercasing.
+api_version: "1"
+category: data-processing
+
+entrypoint: text_cleaner.component:TextCleanerComponent
+
+inputs:
+  input_data:
+    type: string
+    required: true
+
+outputs:
+  output_data:
+    type: string
+
+config:
+  lowercase:
+    type: boolean
+    default: false

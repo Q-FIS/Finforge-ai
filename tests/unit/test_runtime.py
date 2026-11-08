@@ -419,7 +419,7 @@ def test_8_and_9_validate_inputs_and_outputs(
     p.add("n1", "spy-comp", config={"id": "n1"})
 
     # Supplying invalid string for integer input port triggers contract failure
-    res = p.run(inputs={"n1": {"val": "not-an-int"}})  # type: ignore[dict-item]
+    res = p.run(inputs={"n1": {"val": "not-an-int"}})
     assert not res.success
     assert res.status == ExecutionStatus.FAILED
     assert "Input validation failed on node 'n1'" in res.execution_errors[0]

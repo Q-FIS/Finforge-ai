@@ -184,7 +184,7 @@ def test_non_base_component_class_rejected(registry: ComponentRegistry) -> None:
     # Direct BaseComponent class is also rejected
     manifest_base = make_manifest(entrypoint="base:BaseComponent")
     with pytest.raises(ComponentRegistrationError) as exc_base:
-        registry.register(BaseComponent, manifest_base)
+        registry.register(BaseComponent, manifest_base)  # type: ignore[type-abstract]
     assert "Cannot register abstract BaseComponent directly" in str(exc_base.value)
 
 

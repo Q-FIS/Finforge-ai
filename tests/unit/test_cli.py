@@ -162,7 +162,9 @@ def test_interactive_name_empty_rejected(tmp_path: Path) -> None:
     assert "Component name is required" in result.stdout
 
 
-def test_cli_does_not_execute_component_code(tmp_path: Path, monkeypatch) -> None:
+def test_cli_does_not_execute_component_code(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """14. Component creation does not execute setup() or run()."""
 
     def boom(*args: object, **kwargs: object) -> None:
@@ -301,7 +303,8 @@ def test_inspect_not_a_file(tmp_path: Path) -> None:
     """finforge inspect rejects directory path."""
     result = runner.invoke(app, ["inspect", str(tmp_path)])
     assert result.exit_code == 1
-    assert "is not a file" in result.stdout
+    normalized_stdout = " ".join(result.stdout.split())
+    assert "is not a file" in normalized_stdout
 
 
 def test_inspect_malformed_yaml(tmp_path: Path) -> None:

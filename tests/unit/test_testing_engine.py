@@ -236,7 +236,7 @@ def test_missing_test_directory_handled(tmp_path: Path) -> None:
 
     result = run_component_tests(project_dir, run_developer_tests=True)
     assert result.developer_tests.status == TestStatus.SKIPPED
-    assert "missing 'tests/' directory" in result.developer_tests.message or ""
+    assert "missing 'tests/' directory" in (result.developer_tests.message or "")
     # Overall status is PASSED because framework validation succeeded
     assert result.overall_status == TestStatus.PASSED
 
@@ -328,7 +328,8 @@ def test_cli_finforge_test_non_existent_path(tmp_path: Path) -> None:
     """CLI test: finforge test on non-existent path exits with code 1."""
     result = runner.invoke(app, ["test", str(tmp_path / "does_not_exist")])
     assert result.exit_code != 0
-    assert "is not a directory" in result.stdout
+    normalized_stdout = " ".join(result.stdout.split())
+    assert "is not a directory" in normalized_stdout
 
 
 def test_runner_error_distinguished_from_test_failures(

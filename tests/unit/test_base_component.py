@@ -167,7 +167,7 @@ def test_default_teardown_does_not_fail() -> None:
     """8. Default teardown() implementation is a safe no-op returning None."""
     component = DummyValidComponent()
     # Calling teardown() should succeed without error
-    result = component.teardown()
+    result = component.teardown()  # type: ignore[func-returns-value]
     assert result is None
 
 

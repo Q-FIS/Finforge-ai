@@ -52,7 +52,7 @@ def test_example_component_setup_invalid_prefix() -> None:
     """Verify setup() raises ComponentConfigurationError if prefix is not a string."""
     component = ExampleComponent()
     with pytest.raises(ComponentConfigurationError) as excinfo:
-        component.setup({"prefix": 123})  # type: ignore[arg-type]
+        component.setup({"prefix": 123})
     assert "Prefix must be a string" in str(excinfo.value)
 
 
