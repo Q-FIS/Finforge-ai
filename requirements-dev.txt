@@ -1,0 +1,9 @@
+# Development requirements for FinForge AI
+# Install in editable mode with development dependencies:
+#
+#   pip install -r requirements-dev.txt
+#   # or with uv:
+#   uv pip install -r requirements-dev.txt
+#
+
+-e .[dev]

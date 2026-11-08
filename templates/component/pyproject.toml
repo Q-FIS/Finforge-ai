@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "{{ component_name }}"
+version = "{{ version }}"
+description = "{{ description }}"
+readme = "README.md"
+requires-python = ">=3.11"
+{{ authors_block }}
+dependencies = [
+    "finforge-ai>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{ package_name }}"]

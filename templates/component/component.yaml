@@ -1,0 +1,27 @@
+name: {{ component_name }}
+version: "{{ version }}"
+description: "{{ description }}"
+
+api_version: "1"
+category: {{ category }}
+
+entrypoint: {{ package_name }}.component:{{ class_name }}
+
+inputs:
+  input_data:
+    type: array
+    required: true
+    description: Input dataset or array payload to be processed.
+
+outputs:
+  output_data:
+    type: array
+    description: Processed output data array.
+
+config:
+  scale_factor:
+    type: float
+    default: 1.0
+    description: Optional scaling factor applied during execution.
+
+dependencies: []

@@ -1,0 +1,39 @@
+name: custom-kmeans
+version: "0.1.0"
+description: K-Means clustering algorithm implemented from scratch with Lloyd's iteration.
+
+api_version: "1"
+category: machine-learning
+
+entrypoint: my_kmeans.component:KMeansComponent
+
+inputs:
+  data:
+    type: array
+    required: true
+    description: Input feature matrix of shape (n_samples, n_features).
+
+outputs:
+  labels:
+    type: array
+    description: Cluster assignments for each input sample.
+  centroids:
+    type: array
+    description: Final coordinates of the cluster centroids.
+
+config:
+  n_clusters:
+    type: integer
+    default: 3
+    description: The number of clusters to form and centroids to generate.
+  max_iter:
+    type: integer
+    default: 300
+    description: Maximum number of iterations for a single run.
+  tol:
+    type: float
+    default: 0.0001
+    description: Relative tolerance with regards to Frobenius norm of difference in centroids.
+
+dependencies:
+  - numpy>=2.0.0
