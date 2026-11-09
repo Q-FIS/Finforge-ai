@@ -1,6 +1,6 @@
 """Component SDK utilities and scaffolding generators for FinForge AI."""
 
-from finforge.sdk.generator import create_component_project
+from finforge.sdk.generator import create_component_project, create_pipeline_project
 from finforge.sdk.normalization import (
     normalize_component_name,
     to_class_name,
@@ -14,6 +14,7 @@ from finforge.sdk.template import (
 
 __all__ = [
     "create_component_project",
+    "create_pipeline_project",
     "get_default_template_dir",
     "normalize_component_name",
     "render_template_path_segment",

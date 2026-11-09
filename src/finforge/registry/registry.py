@@ -4,7 +4,10 @@ This module provides `ComponentRegistry`, which maintains an in-memory mapping
 between component names, component classes, and their validated manifests.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from finforge.component import BaseComponent
@@ -236,6 +239,64 @@ class ComponentRegistry:
     def clear(self) -> None:
         """Remove all registered components."""
         self._entries.clear()
+
+    def discover(
+        self,
+        search_paths: list[str | Path] | str | Path,
+        overwrite: bool = False,
+    ) -> list[str]:
+        """Automatically find and register all components found within search paths.
+
+        Recursively scans the provided directories for 'component.yaml' manifests,
+        imports their entrypoint classes, and registers them.
+
+        Args:
+            search_paths: Path or list of directory paths to scan for components.
+            overwrite: Whether to overwrite existing registrations with the same name.
+
+        Returns:
+            List of successfully discovered and registered component names.
+        """
+        import importlib
+        import sys
+        from pathlib import Path
+
+        from finforge.manifest import load_manifest
+
+        if isinstance(search_paths, (str, Path)):
+            paths = [Path(search_paths)]
+        else:
+            paths = [Path(p) for p in search_paths]
+
+        registered: list[str] = []
+        for base_path in paths:
+            if not base_path.exists():
+                continue
+            for manifest_file in base_path.rglob("component.yaml"):
+                comp_dir = manifest_file.parent
+                try:
+                    manifest = load_manifest(manifest_file)
+                except Exception:
+                    continue
+
+                if ":" not in manifest.entrypoint:
+                    continue
+                module_name, class_name = manifest.entrypoint.split(":", 1)
+                src_dir = comp_dir / "src"
+                candidate = src_dir if src_dir.is_dir() else comp_dir
+                cand_str = str(candidate.resolve())
+                if cand_str not in sys.path:
+                    sys.path.insert(0, cand_str)
+
+                try:
+                    mod = importlib.import_module(module_name)
+                    cls = getattr(mod, class_name)
+                    self.register(cls, manifest, overwrite=overwrite)
+                    registered.append(manifest.name)
+                except Exception:
+                    continue
+
+        return registered
 
     def __len__(self) -> int:
         """Return the number of currently registered components."""

@@ -300,6 +300,23 @@ finforge inspect fraud_pipeline.yaml
 finforge inspect fraud_pipeline.yaml --json
 ```
 
+#### Visualizing and Exporting Pipelines (`finforge export`)
+Export serialized pipeline graphs into standard visual diagram formats (Mermaid, Graphviz DOT, Markdown):
+
+```bash
+# Export Mermaid diagram directly to terminal
+finforge export pipeline.yaml
+
+# Export to a file for GitHub/GitLab markdown documentation or Obsidian
+finforge export pipeline.yaml --format mermaid --output pipeline.mmd
+
+# Export to Graphviz DOT format for rendering with dot/graphviz
+finforge export pipeline.yaml --format dot -o pipeline.dot
+
+# Export a complete Markdown summary with embedded diagram and schema tables
+finforge export pipeline.yaml --format markdown -o pipeline.md
+```
+
 #### Scaffolding a New Component (`finforge create`)
 Generate a complete, production-ready component package with tests and examples:
 
@@ -312,6 +329,50 @@ Run framework validation (manifest schemas, class structure, port contracts, and
 
 ```bash
 finforge test components/risk-scorer/
+```
+
+#### Running Components Standalone (`finforge run component`)
+Execute any component standalone with inputs, configuration, contract verification, and execution timing telemetry:
+
+```bash
+# Execute standalone component (auto-synthesizes valid sample inputs if omitted)
+finforge run component components/text-cleaner
+
+# Execute with custom inputs and config parameters
+finforge run component components/text-cleaner \
+  --input '{"input_data": "  HELLO   WORLD  "}' \
+  --config '{"lowercase": true}'
+
+# Execute with input/config JSON files
+finforge run component components/text-cleaner --input-file inputs.json --config-file config.json
+
+# Machine-readable JSON output for automated scripting
+finforge run component components/text-cleaner --json
+
+# Direct alias is also supported
+finforge run-component components/text-cleaner --input '{"input_data": "test"}'
+```
+
+#### Running Pipelines with Topological Runtime (`finforge run pipeline`)
+Execute end-to-end multi-component pipelines synchronously according to deterministic topological dependency order:
+
+```bash
+# Execute a pipeline definition with external inputs
+finforge run pipeline components/pipelines/financial-risk-analysis \
+  --inputs '{"texts": ["Revenue surged 34% YoY with record operating cash flow."]}'
+
+# Execute pipeline YAML file directly
+finforge run pipeline components/pipelines/financial-risk-analysis/pipeline.yaml \
+  --inputs '{"text_cleaner": {"texts": ["Credit rating downgraded to B-."]}}'
+
+# Load external inputs from a JSON or YAML file
+finforge run pipeline components/pipelines/financial-risk-analysis --inputs-file inputs.json
+
+# Machine-readable JSON output for CI/CD test automation
+finforge run pipeline components/pipelines/financial-risk-analysis --inputs-file inputs.json --json
+
+# Direct alias is also supported
+finforge run-pipeline components/pipelines/financial-risk-analysis --inputs-file inputs.json
 ```
 
 ---

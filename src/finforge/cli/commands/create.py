@@ -63,6 +63,17 @@ def create_cmd(
             help="Author name or credit.",
         ),
     ] = None,
+    pipeline: Annotated[
+        Path | None,
+        typer.Option(
+            "--pipeline",
+            "-p",
+            help=(
+                "Target pipeline directory to add this component into "
+                "(saves under <pipeline>/components)."
+            ),
+        ),
+    ] = None,
 ) -> None:
     """Create a new FinForge AI component project from the standard template."""
     if not name or not name.strip():
@@ -77,10 +88,17 @@ def create_cmd(
             console.print("[bold red]Error:[/bold red] Component name is required.")
             raise typer.Exit(code=1)
 
+    target_destination = destination
+    if pipeline is not None:
+        if pipeline.name == "components":
+            target_destination = pipeline
+        else:
+            target_destination = pipeline / "components"
+
     try:
         project_path = create_component_project(
             name=name,
-            destination=destination,
+            destination=target_destination,
             description=description,
             category=category,
             version=version,
