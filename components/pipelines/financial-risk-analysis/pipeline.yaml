@@ -1,0 +1,36 @@
+format_version: '1'
+name: financial-risk-analysis
+description: Financial sentiment and risk tagging workflow
+nodes:
+- id: text_cleaner
+  component: text-cleaner
+  config:
+    lowercase: false
+    strip_html: true
+    remove_disclaimers: true
+- id: sentiment_scorer
+  component: sentiment-scorer
+  config:
+    sentiment_threshold: 0.1
+    confidence_scaling: 1.0
+- id: risk_tagger
+  component: risk-tagger
+  config:
+    risk_threshold: 50.0
+    strict_mode: false
+edges:
+- source_node: text_cleaner
+  source_port: cleaned_texts
+  destination_node: sentiment_scorer
+  destination_port: texts
+- source_node: sentiment_scorer
+  source_port: sentiment_results
+  destination_node: risk_tagger
+  destination_port: sentiment_results
+- source_node: sentiment_scorer
+  source_port: sentiment_summary
+  destination_node: risk_tagger
+  destination_port: sentiment_summary
+metadata:
+  domain: finance
+  pipeline_type: risk-analysis

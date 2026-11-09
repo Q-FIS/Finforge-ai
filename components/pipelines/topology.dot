@@ -1,0 +1,14 @@
+digraph "financial-risk-analysis" {
+  rankdir=LR;
+  graph [fontname="Helvetica", bgcolor="transparent"];
+  node [shape=box, style="rounded,filled", fillcolor="#e0e7ff", color="#4338ca", fontname="Helvetica", fontsize=11, margin="0.2,0.1"];
+  edge [color="#64748b", fontname="Helvetica", fontsize=9, fontcolor="#475569"];
+
+  "text_cleaner" [label="text_cleaner\n[text-cleaner]"];
+  "sentiment_scorer" [label="sentiment_scorer\n[sentiment-scorer]"];
+  "risk_tagger" [label="risk_tagger\n[risk-tagger]"];
+
+  "text_cleaner" -> "sentiment_scorer" [label="cleaned_texts -> texts"];
+  "sentiment_scorer" -> "risk_tagger" [label="sentiment_results -> sentiment_results"];
+  "sentiment_scorer" -> "risk_tagger" [label="sentiment_summary -> sentiment_summary"];
+}

@@ -1,0 +1,38 @@
+name: risk-tagger
+version: "0.1.0"
+description: "Categorizes financial risk pillars and computes composite risk ratings."
+
+api_version: "1"
+category: evaluation
+
+entrypoint: risk_tagger.component:RiskTaggerComponent
+
+inputs:
+  sentiment_results:
+    type: array
+    required: true
+    description: "Scored financial items from the sentiment scorer component."
+  sentiment_summary:
+    type: object
+    required: false
+    description: "Optional aggregate sentiment metrics from upstream."
+
+outputs:
+  tagged_items:
+    type: array
+    description: "Detailed per-item financial risk tags, categories, and severity ratings."
+  risk_assessment:
+    type: object
+    description: "Comprehensive financial risk report and composite risk score."
+
+config:
+  risk_threshold:
+    type: float
+    default: 50.0
+    description: "Risk score threshold (0-100) separating moderate from elevated risk."
+  strict_mode:
+    type: boolean
+    default: false
+    description: "Flag to enforce conservative risk escalation."
+
+dependencies: []

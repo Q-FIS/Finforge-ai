@@ -1,0 +1,25 @@
+name: risk-calculator
+version: "0.1.0"
+description: Evaluates transaction amounts against a risk threshold.
+api_version: "1"
+category: machine-learning
+
+entrypoint: risk_calculator.component:RiskCalculatorComponent
+
+inputs:
+  amount:
+    type: float
+    required: true
+    description: Transaction dollar amount.
+
+outputs:
+  risk_level:
+    type: string
+    description: "Risk assessment: 'HIGH' or 'LOW'."
+
+config:
+  threshold:
+    type: float
+    required: false
+    default: 10000.0
+    description: Amounts equal to or exceeding this threshold are marked HIGH risk.

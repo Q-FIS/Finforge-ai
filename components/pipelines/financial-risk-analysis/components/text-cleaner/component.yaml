@@ -1,0 +1,39 @@
+name: text-cleaner
+version: "0.1.0"
+description: "Cleans and normalizes financial text dispatches, filings, and news feeds."
+
+api_version: "1"
+category: data-processing
+
+entrypoint: text_cleaner.component:TextCleanerComponent
+
+inputs:
+  texts:
+    type: array
+    items:
+      type: string
+    required: false
+    description: "Raw financial texts, news, filings, or disclosures to normalize."
+
+outputs:
+  cleaned_texts:
+    type: array
+    items:
+      type: string
+    description: "Normalized and cleaned financial text corpus."
+
+config:
+  lowercase:
+    type: boolean
+    default: false
+    description: "Optionally convert text to lowercase (preserves acronyms like SEC, EBITDA by default)."
+  strip_html:
+    type: boolean
+    default: true
+    description: "Remove HTML/XML tags and markup formatting."
+  remove_disclaimers:
+    type: boolean
+    default: true
+    description: "Strip standard forward-looking statement boilerplate."
+
+dependencies: []

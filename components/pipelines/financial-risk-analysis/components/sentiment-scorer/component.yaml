@@ -1,0 +1,36 @@
+name: sentiment-scorer
+version: "0.1.0"
+description: "Domain-specific financial sentiment analysis scoring for financial text."
+
+api_version: "1"
+category: machine-learning
+
+entrypoint: sentiment_scorer.component:SentimentScorerComponent
+
+inputs:
+  texts:
+    type: array
+    items:
+      type: string
+    required: true
+    description: "List of normalized financial text statements to analyze."
+
+outputs:
+  sentiment_results:
+    type: array
+    description: "Per-item financial sentiment metrics and polarity scores."
+  sentiment_summary:
+    type: object
+    description: "Corpus-level aggregate financial sentiment metrics."
+
+config:
+  sentiment_threshold:
+    type: float
+    default: 0.1
+    description: "Threshold polarity score to categorize as POSITIVE or NEGATIVE vs NEUTRAL."
+  confidence_scaling:
+    type: float
+    default: 1.0
+    description: "Scaling multiplier for confidence scoring."
+
+dependencies: []
