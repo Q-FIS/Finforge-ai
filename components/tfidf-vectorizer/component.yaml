@@ -1,0 +1,77 @@
+name: tfidf-vectorizer
+version: "0.1.0"
+description: Fits IDF on tokenised passages and produces TF-IDF vectors for passages and queries (RET-07).
+api_version: "1"
+category: rag
+
+entrypoint: tfidf_vectorizer.component:TfidfVectorizerComponent
+
+inputs:
+  documents:
+    type: array
+    required: true
+    description: Tokenised passages (one list of string tokens per passage) used to fit the model.
+    items:
+      type: array
+      items:
+        type: string
+  queries:
+    type: array
+    required: false
+    description: Optional tokenised queries transformed with the fitted vocabulary and IDF.
+    items:
+      type: array
+      items:
+        type: string
+
+outputs:
+  vocabulary:
+    type: array
+    description: Sorted vocabulary; defines the column order of every vector.
+    items:
+      type: string
+  idf:
+    type: array
+    description: IDF weight per vocabulary term.
+    items:
+      type: number
+  document_frequency:
+    type: array
+    description: Number of passages containing each vocabulary term.
+    items:
+      type: integer
+  document_vectors:
+    type: array
+    description: Dense TF-IDF vector per passage, in input order.
+    items:
+      type: array
+      items:
+        type: number
+  query_vectors:
+    type: array
+    description: Dense TF-IDF vector per query, in input order (empty if no queries).
+    items:
+      type: array
+      items:
+        type: number
+  query_oov_terms:
+    type: array
+    description: Per query, the sorted terms ignored because they are not in the vocabulary.
+    items:
+      type: array
+      items:
+        type: string
+
+config:
+  idf_convention:
+    type: string
+    default: smooth
+    description: "IDF formula: smooth = ln((1+N)/(1+df))+1 (scikit-learn default), unsmoothed = ln(N/df)+1, textbook = ln(N/df)."
+  sublinear_tf:
+    type: boolean
+    default: false
+    description: Use 1 + ln(tf) instead of the raw term count.
+  norm:
+    type: string
+    default: l2
+    description: "Vector normalisation: l2, l1 or none."
