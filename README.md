@@ -94,8 +94,8 @@ FinForge AI requires **Python 3.11 or newer**.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/finforge-ai/finforge-ai.git
-cd finforge-ai
+git clone https://github.com/Q-FIS/Finforge-ai.git
+cd Finforge-ai
 ```
 
 ### 2. Create a Virtual Environment
