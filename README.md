@@ -104,7 +104,10 @@ Using standard Python virtual environments:
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# On Linux
+source .venv/bin/activate
+# On windows
+.venv\Scripts\activate
 ```
 
 Or using [`uv`](https://docs.astral.sh/uv/):
