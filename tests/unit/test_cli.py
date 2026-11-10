@@ -23,6 +23,7 @@ def test_root_help() -> None:
     assert result.exit_code == 0
     assert "Usage: finforge" in result.stdout
     assert "create" in result.stdout
+    assert "update" in result.stdout
 
 
 def test_version_command() -> None:
@@ -891,4 +892,23 @@ def test_run_pipeline_missing_required_inputs_failure(tmp_path: Path) -> None:
     assert "Missing required input" in result.stdout
 
 
+def test_update_cli_command(tmp_path: Path) -> None:
+    """finforge update command synchronizes component.yaml according to code."""
+    from finforge.sdk import create_component_project
 
+    comp_dir = create_component_project("cli-updater-test", destination=tmp_path)
+    result = runner.invoke(app, ["update", str(comp_dir)])
+    assert result.exit_code == 0
+    assert "cli-updater-test" in result.stdout
+    assert "Up-to-date" in result.stdout or "Updated" in result.stdout
+
+
+def test_update_cli_pipeline_command(tmp_path: Path) -> None:
+    """finforge update command synchronizes pipeline.yaml according to code."""
+    from finforge.sdk import create_pipeline_project
+
+    pipe_dir = create_pipeline_project("cli-pipe-updater-test", destination=tmp_path)
+    result = runner.invoke(app, ["update", str(pipe_dir)])
+    assert result.exit_code == 0
+    assert "cli-pipe" in result.stdout
+    assert "Up-to-date" in result.stdout or "Updated" in result.stdout

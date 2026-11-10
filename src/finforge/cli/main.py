@@ -15,6 +15,11 @@ from finforge.cli.commands.inspect_pipeline import inspect_cmd
 from finforge.cli.commands.run_component import run_component_cmd
 from finforge.cli.commands.run_pipeline import run_pipeline_cmd
 from finforge.cli.commands.test import test_cmd
+from finforge.cli.commands.update import (
+    update_cmd,
+    update_component_cmd,
+    update_pipeline_cmd,
+)
 
 console = Console()
 
@@ -84,6 +89,9 @@ app.add_typer(run_app, name="run")
 app.command(name="run-component")(run_component_cmd)
 app.command(name="run-pipeline")(run_pipeline_cmd)
 app.command(name="test")(test_cmd)
+app.command(name="update")(update_cmd)
+app.command(name="update-component")(update_component_cmd)
+app.command(name="update-pipeline")(update_pipeline_cmd)
 
 
 if __name__ == "__main__":

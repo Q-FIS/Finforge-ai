@@ -7,6 +7,11 @@ from finforge.cli.commands.inspect_pipeline import inspect_cmd
 from finforge.cli.commands.run_component import run_component_cmd
 from finforge.cli.commands.run_pipeline import run_pipeline_cmd
 from finforge.cli.commands.test import test_cmd
+from finforge.cli.commands.update import (
+    update_cmd,
+    update_component_cmd,
+    update_pipeline_cmd,
+)
 
 __all__ = [
     "create_cmd",
@@ -16,4 +21,7 @@ __all__ = [
     "run_component_cmd",
     "run_pipeline_cmd",
     "test_cmd",
+    "update_cmd",
+    "update_component_cmd",
+    "update_pipeline_cmd",
 ]

@@ -1,0 +1,27 @@
+name: hello1
+version: "0.1.0"
+description: "A scratch-first hello1 component for FinForge AI."
+
+api_version: "1"
+category: machine-learning
+
+entrypoint: hello1.component:Hello1Component
+
+inputs:
+  input_data:
+    type: array
+    required: true
+    description: Input dataset or array payload to be processed.
+
+outputs:
+  output_data:
+    type: array
+    description: Processed output data array.
+
+config:
+  scale_factor:
+    type: float
+    default: 1.0
+    description: Optional scaling factor applied during execution.
+
+dependencies: []

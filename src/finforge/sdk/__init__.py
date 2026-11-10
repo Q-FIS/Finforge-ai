@@ -11,8 +11,14 @@ from finforge.sdk.template import (
     render_template_path_segment,
     render_template_string,
 )
+from finforge.sdk.updater import (
+    auto_update,
+    update_component,
+    update_pipeline,
+)
 
 __all__ = [
+    "auto_update",
     "create_component_project",
     "create_pipeline_project",
     "get_default_template_dir",
@@ -21,4 +27,6 @@ __all__ = [
     "render_template_string",
     "to_class_name",
     "to_package_name",
+    "update_component",
+    "update_pipeline",
 ]
