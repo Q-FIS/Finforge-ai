@@ -19,7 +19,7 @@ from finforge.pipeline.serialization import (
 console = Console()
 
 
-class ExportFormat(str, enum.Enum):
+class ExportFormat(enum.StrEnum):
     """Supported visual export formats."""
 
     MERMAID = "mermaid"
@@ -63,8 +63,10 @@ def generate_dot(
         f'digraph "{doc.name}" {{',
         f"  rankdir={rankdir};",
         '  graph [fontname="Helvetica", bgcolor="transparent"];',
-        '  node [shape=box, style="rounded,filled", fillcolor="#e0e7ff", color="#4338ca", fontname="Helvetica", fontsize=11, margin="0.2,0.1"];',
-        '  edge [color="#64748b", fontname="Helvetica", fontsize=9, fontcolor="#475569"];',
+        '  node [shape=box, style="rounded,filled", fillcolor="#e0e7ff", '
+        'color="#4338ca", fontname="Helvetica", fontsize=11, margin="0.2,0.1"];',
+        '  edge [color="#64748b", fontname="Helvetica", fontsize=9, '
+        'fontcolor="#475569"];',
         "",
     ]
 
@@ -77,7 +79,8 @@ def generate_dot(
         for edge in doc.edges:
             port_label = f"{edge.source_port} -> {edge.destination_port}"
             lines.append(
-                f'  "{edge.source_node}" -> "{edge.destination_node}" [label="{port_label}"];'
+                f'  "{edge.source_node}" -> "{edge.destination_node}" '
+                f'[label="{port_label}"];'
             )
 
     lines.append("}")
@@ -111,7 +114,7 @@ def generate_markdown(
     ])
 
     for node in doc.nodes:
-        cfg = ", ".join(f"`{k}`" for k in node.config.keys()) if node.config else "*None*"
+        cfg = ", ".join(f"`{k}`" for k in node.config) if node.config else "*None*"
         lines.append(f"| `{node.id}` | `{node.component}` | {cfg} |")
 
     if doc.edges:
@@ -123,9 +126,9 @@ def generate_markdown(
             "| :--- | :--- |",
         ])
         for edge in doc.edges:
-            lines.append(
-                f"| `{edge.source_node}.{edge.source_port}` | `{edge.destination_node}.{edge.destination_port}` |"
-            )
+            src_str = f"{edge.source_node}.{edge.source_port}"
+            dst_str = f"{edge.destination_node}.{edge.destination_port}"
+            lines.append(f"| `{src_str}` | `{dst_str}` |")
 
     return "\n".join(lines)
 
@@ -138,7 +141,7 @@ def export_cmd(
             show_default=False,
         ),
     ],
-    format: Annotated[
+    export_format: Annotated[
         ExportFormat,
         typer.Option(
             "--format",
@@ -159,11 +162,11 @@ def export_cmd(
         typer.Option(
             "--direction",
             "-d",
-            help="Flowchart layout orientation ('LR' for left-to-right, 'TD' for top-down).",
+            help="Flowchart layout orientation ('LR' left-to-right, 'TD' top-down).",
         ),
     ] = "LR",
 ) -> None:
-    """Export pipeline DAG topology into visual diagram formats (Mermaid, Graphviz DOT, Markdown)."""
+    """Export pipeline DAG topology to visual formats (Mermaid, DOT, Markdown)."""
     target_file = pipeline_path.resolve()
     if not target_file.exists():
         console.print(
@@ -195,13 +198,13 @@ def export_cmd(
         raise typer.Exit(code=1) from exc
 
     # Generate markup according to format
-    if format == ExportFormat.MERMAID:
+    if export_format == ExportFormat.MERMAID:
         rendered = generate_mermaid(doc, direction=normalized_dir)
-    elif format == ExportFormat.DOT:
+    elif export_format == ExportFormat.DOT:
         rendered = generate_dot(doc, direction=normalized_dir)
-    elif format == ExportFormat.MARKDOWN:
+    elif export_format == ExportFormat.MARKDOWN:
         rendered = generate_markdown(doc, direction=normalized_dir)
-    elif format == ExportFormat.JSON:
+    elif export_format == ExportFormat.JSON:
         import json
 
         data = {
@@ -233,11 +236,13 @@ def export_cmd(
             out_file.write_text(rendered + "\n", encoding="utf-8")
             console.print(
                 f"[green]✓[/green] Successfully exported pipeline to "
-                f"[cyan]'{out_file}'[/cyan] (format: [bold]{format.value}[/bold])."
+                f"[cyan]'{out_file}'[/cyan] "
+                f"(format: [bold]{export_format.value}[/bold])."
             )
         except OSError as err:
             console.print(
-                f"[bold red]Error:[/bold red] Failed writing to output file '{out_file}': {err}"
+                f"[bold red]Error:[/bold red] "
+                f"Failed writing to output file '{out_file}': {err}"
             )
             raise typer.Exit(code=1) from err
     else:

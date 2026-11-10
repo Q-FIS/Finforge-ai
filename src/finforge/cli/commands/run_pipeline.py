@@ -29,11 +29,16 @@ def _parse_payload(
     if file_path is not None:
         resolved_file = file_path.resolve()
         if not resolved_file.is_file():
-            raise FileNotFoundError(f"{payload_name.capitalize()} file '{resolved_file}' does not exist.")
+            raise FileNotFoundError(
+                f"{payload_name.capitalize()} file '{resolved_file}' does not exist."
+            )
         content = resolved_file.read_text(encoding="utf-8")
         parsed = yaml.safe_load(content)
         if not isinstance(parsed, dict):
-            raise ValueError(f"Content in '{resolved_file}' must be a JSON/YAML mapping/dict, got {type(parsed).__name__}.")
+            raise ValueError(
+                f"Content in '{resolved_file}' must be a JSON/YAML mapping/dict, "
+                f"got {type(parsed).__name__}."
+            )
         return parsed
 
     if value is None or not value.strip():
@@ -99,7 +104,8 @@ def _resolve_pipeline_file(pipeline_path: Path) -> Path:
             if cand.is_file():
                 return cand
         raise FileNotFoundError(
-            f"Pipeline definition ('pipeline.yaml' or 'pipeline.yml') not found in directory '{target}'."
+            "Pipeline definition ('pipeline.yaml' or 'pipeline.yml') "
+            f"not found in directory '{target}'."
         )
     raise FileNotFoundError(f"Pipeline path '{target}' does not exist.")
 
@@ -149,7 +155,7 @@ def _auto_route_inputs(
     pipeline: Pipeline,
 ) -> dict[str, dict[str, Any]]:
     """Ensure inputs are keyed by node_id.
-    
+
     If user provided {port: value} instead of {node_id: {port: value}},
     automatically route to entry node(s) matching port names.
     """
@@ -158,7 +164,7 @@ def _auto_route_inputs(
 
     # Check if all keys already match node IDs in the pipeline graph
     graph = pipeline.graph
-    all_keys_are_nodes = all(graph.has_node(k) for k in parsed_inputs.keys())
+    all_keys_are_nodes = all(graph.has_node(k) for k in parsed_inputs)
     if all_keys_are_nodes:
         # Verify sub-values are dicts
         for k, v in parsed_inputs.items():
@@ -237,7 +243,7 @@ def run_pipeline_cmd(
         typer.Option(
             "--json",
             "-j",
-            help="Output structured pipeline execution result as machine-readable JSON.",
+            help="Output structured execution result as machine-readable JSON.",
         ),
     ] = False,
 ) -> None:
@@ -312,12 +318,14 @@ def run_pipeline_cmd(
         return
 
     # Rich formatting
+    desc_str = pipeline.description or "[dim]None[/dim]"
+    num_disc = len(discovered)
     console.print(
         Panel(
             f"[bold]Pipeline:[/bold]        [cyan]{pipeline.name}[/cyan]\n"
-            f"[bold]Description:[/bold]     {pipeline.description or '[dim]None[/dim]'}\n"
+            f"[bold]Description:[/bold]     {desc_str}\n"
             f"[bold]Execution Order:[/bold] [bold]{' -> '.join(order)}[/bold]\n"
-            f"[bold]Components:[/bold]      [green]{len(discovered)}[/green] discovered",
+            f"[bold]Components:[/bold]      [green]{num_disc}[/green] discovered",
             title="FinForge Pipeline Execution",
             expand=False,
         )
@@ -349,7 +357,9 @@ def run_pipeline_cmd(
         dur_str = f"{node_res.duration_ms:.2f}"
         out_keys = list(node_res.outputs.keys())
         out_summary = ", ".join(out_keys) if out_keys else "[dim]None[/dim]"
-        table.add_row(node_id, node_res.component_name, status_str, dur_str, out_summary)
+        table.add_row(
+            node_id, node_res.component_name, status_str, dur_str, out_summary
+        )
 
     console.print(table)
 
@@ -359,7 +369,10 @@ def run_pipeline_cmd(
         for nid, nout in result.outputs.items():
             out_panel_lines.append(f"[bold cyan]{nid}:[/bold cyan]")
             for port, val in nout.items():
-                val_repr = json.dumps(val, default=str) if isinstance(val, (dict, list)) else str(val)
+                is_composite = isinstance(val, (dict, list))
+                val_repr = (
+                    json.dumps(val, default=str) if is_composite else str(val)
+                )
                 if len(val_repr) > 100:
                     val_repr = val_repr[:97] + "..."
                 out_panel_lines.append(f"  • [magenta]{port}[/magenta]: {val_repr}")

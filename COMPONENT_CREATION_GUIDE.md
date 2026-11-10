@@ -1,6 +1,6 @@
-# FinForge AI — Component Creation from Scratch Guide
+# FinForge AI — Component Creation Guide
 
-A comprehensive, step-by-step developer guide for designing, implementing, configuring, testing, and running custom FinForge AI components from first principles.
+A comprehensive, step-by-step developer guide for installing FinForge AI, scaffolding components with the CLI, implementing, testing, and running custom FinForge AI components.
 
 ---
 
@@ -10,24 +10,30 @@ A comprehensive, step-by-step developer guide for designing, implementing, confi
    - [The Scratch-First Philosophy](#the-scratch-first-philosophy)
    - [The Three-Stage Lifecycle](#the-three-stage-lifecycle)
    - [Data Contracts & Port Types](#data-contracts--port-types)
-2. [Component Project Structure](#2-component-project-structure)
-3. [Creating a Component Project](#3-creating-a-component-project)
-   - [Method A: Using the FinForge CLI](#method-a-using-the-finforge-cli)
-   - [Method B: Using the Python SDK API](#method-b-using-the-python-sdk-api)
-   - [Method C: Manual Construction from Scratch](#method-c-manual-construction-from-scratch)
-4. [Step-by-Step Implementation from Scratch](#4-step-by-step-implementation-from-scratch)
-   - [Step 1: Manifest Specification (`component.yaml`)](#step-1-manifest-specification-componentyaml)
-   - [Step 2: Component Implementation (`component.py`)](#step-2-component-implementation-componentpy)
-   - [Step 3: Packaging Definition (`pyproject.toml`)](#step-3-packaging-definition-pyprojecttoml)
-   - [Step 4: Writing the Usage Example (`examples/basic_usage.py`)](#step-4-writing-the-usage-example-examplesbasic_usagepy)
-   - [Step 5: Writing Comprehensive Unit Tests (`tests/test_component.py`)](#step-5-writing-comprehensive-unit-tests-teststest_componentpy)
-5. [Testing & Validation](#5-testing--validation)
+2. [Installation & Setup](#2-installation--setup)
+   - [Install FinForge AI](#install-finforge-ai)
+   - [Verify the CLI](#verify-the-cli)
+   - [CLI Quick Reference](#cli-quick-reference)
+3. [Component Project Structure](#3-component-project-structure)
+4. [Creating a Component with the FinForge CLI](#4-creating-a-component-with-the-finforge-cli)
+   - [Basic Scaffold](#basic-scaffold)
+   - [All Available CLI Options](#all-available-cli-options)
+   - [Adding a Component Directly into a Pipeline](#adding-a-component-directly-into-a-pipeline)
+5. [Step-by-Step Implementation](#5-step-by-step-implementation)
+   - [Step 1: Run `finforge create`](#step-1-run-finforge-create)
+   - [Step 2: Edit the Manifest (`component.yaml`)](#step-2-edit-the-manifest-componentyaml)
+   - [Step 3: Implement the Component (`component.py`)](#step-3-implement-the-component-componentpy)
+   - [Step 4: Write a Usage Example (`examples/basic_usage.py`)](#step-4-write-a-usage-example-examplesbasic_usagepy)
+   - [Step 5: Write Unit Tests (`tests/test_component.py`)](#step-5-write-unit-tests-teststest_componentpy)
+6. [Testing & Validation](#6-testing--validation)
    - [Running the FinForge Validation Suite (`finforge test`)](#running-the-finforge-validation-suite-finforge-test)
    - [Direct Unit Testing via Pytest](#direct-unit-testing-via-pytest)
-6. [Pipeline Integration & Dynamic Discovery](#6-pipeline-integration--dynamic-discovery)
+7. [Running a Component Standalone](#7-running-a-component-standalone)
+8. [Pipeline Integration & Dynamic Discovery](#8-pipeline-integration--dynamic-discovery)
    - [Dynamic Discovery via `ComponentRegistry`](#dynamic-discovery-via-componentregistry)
    - [Building and Executing in a Directed Acyclic Graph (DAG)](#building-and-executing-in-a-directed-acyclic-graph-dag)
-7. [Best Practices & Error Handling](#7-best-practices--error-handling)
+9. [Alternative: Python SDK Scaffolding](#9-alternative-python-sdk-scaffolding)
+10. [Best Practices & Error Handling](#10-best-practices--error-handling)
 
 ---
 
@@ -37,7 +43,7 @@ A comprehensive, step-by-step developer guide for designing, implementing, confi
 FinForge AI rejects opaque abstractions and bloated dependency trees. Every component is an isolated, inspectable unit of computation with strict type boundaries, explicit state transitions, and deterministic lifecycle management.
 
 ### The Three-Stage Lifecycle
-Every component in FinForge AI inherits from `finforge.component.BaseComponent` and strictly executes through three lifecycle states:
+Every component in FinForge AI inherits from `finforge.component.BaseComponent` and executes through three lifecycle states:
 
 ```mermaid
 flowchart LR
@@ -65,7 +71,71 @@ Supported contract types:
 
 ---
 
-## 2. Component Project Structure
+## 2. Installation & Setup
+
+### Install FinForge AI
+
+FinForge AI requires **Python 3.11 or newer**. Install it from source in editable mode so the `finforge` CLI entrypoint becomes available globally in your environment:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/finforge-ai/finforge-ai.git
+cd finforge-ai
+
+# 2. Create a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+# 3. Install in editable mode with dev dependencies
+pip install -e ".[dev]"
+# or using requirements file:
+pip install -r requirements-dev.txt
+```
+
+### Verify the CLI
+
+After installation, confirm the `finforge` CLI is working:
+
+```bash
+finforge --version
+# FinForge AI version 0.1.0.dev0
+
+finforge --help
+```
+
+Expected output:
+
+```
+Usage: finforge [OPTIONS] COMMAND [ARGS]...
+
+  FinForge AI CLI: A scratch-first, modular, open-source AI framework.
+
+Commands:
+  create           Create a new FinForge AI component project from the standard template.
+  create-pipeline  Create a new FinForge AI pipeline project with local components directory.
+  export           Export pipeline DAG topology to visual formats (Mermaid, DOT, Markdown).
+  inspect          Inspect and display the topology of a serialized FinForge AI pipeline.
+  run-component    Execute a FinForge AI component standalone with inputs and configuration.
+  run-pipeline     Execute a serialized FinForge AI pipeline with topological runtime execution.
+  test             Run architectural validation and developer tests on a component project.
+  run              Execute FinForge AI components and pipelines.
+```
+
+### CLI Quick Reference
+
+| Command | Purpose |
+|---------|---------|
+| `finforge create <name>` | Scaffold a new component project |
+| `finforge test <path>` | Validate manifest, contracts, and run tests |
+| `finforge run-component <path>` | Execute a component standalone |
+| `finforge run-pipeline <file>` | Execute a pipeline from a YAML file |
+| `finforge create-pipeline <name>` | Scaffold a new pipeline project |
+| `finforge inspect <file>` | Inspect pipeline topology |
+| `finforge export <file>` | Export pipeline DAG to Mermaid / DOT |
+
+---
+
+## 3. Component Project Structure
 
 A fully compliant FinForge AI component has the following layout:
 
@@ -84,15 +154,19 @@ components/text-cleaner/
     └── test_component.py        # Pytest test cases
 ```
 
+> [!NOTE]
+> The `finforge create` CLI command generates this entire structure automatically. You should **never** need to create these files manually.
+
 ---
 
-## 3. Creating a Component Project
+## 4. Creating a Component with the FinForge CLI
 
-### Method A: Using the FinForge CLI
-The fastest way to scaffold an isolated component project is through the `finforge create` command:
+The `finforge create` command is the **recommended and fastest way** to scaffold a new component. It generates the full project structure — manifest, implementation stub, packaging config, example, and tests — in a single command.
+
+### Basic Scaffold
 
 ```bash
-python -m finforge.cli.main create text-cleaner \
+finforge create text-cleaner \
     --destination ./components \
     --category data-processing \
     --version 0.1.0 \
@@ -100,35 +174,92 @@ python -m finforge.cli.main create text-cleaner \
     --author "FinForge Developer"
 ```
 
-### Method B: Using the Python SDK API
-You can also generate components programmatically:
+This creates:
 
-```python
-from pathlib import Path
-from finforge.sdk import create_component_project
-
-project_path = create_component_project(
-    name="text-cleaner",
-    destination=Path("./components"),
-    description="Cleans text by normalizing whitespace and optionally lowercasing.",
-    category="data-processing",
-    version="0.1.0",
-    author="FinForge Developer",
-)
-print(f"Component created at: {project_path}")
+```
+components/text-cleaner/
+├── component.yaml
+├── pyproject.toml
+├── README.md
+├── src/
+│   └── text_cleaner/
+│       ├── __init__.py
+│       └── component.py        ← edit your logic here
+├── examples/
+│   └── basic_usage.py
+└── tests/
+    └── test_component.py
 ```
 
-### Method C: Manual Construction from Scratch
-To build a component completely by hand without scaffolding tools, proceed directly to Section 4.
+### All Available CLI Options
+
+```
+Usage: finforge create [OPTIONS] [name]
+
+Arguments:
+  name   Name of the component to create (e.g. 'text-cleaner')
+
+Options:
+  -d, --destination <path>   Directory where the component folder will be created.
+                             [default: ./components]
+      --description <str>    Human summary of component functionality.
+  -c, --category <str>       AI/ML domain category (e.g. 'machine-learning', 'rag',
+                             'data-processing', 'deep-learning').
+                             [default: machine-learning]
+      --version <str>        Initial component package version. [default: 0.1.0]
+  -a, --author <str>         Author name or credit.
+  -p, --pipeline <path>      Target pipeline directory to add this component into
+                             (saves under <pipeline>/components).
+      --help                 Show this message and exit.
+```
+
+### Adding a Component Directly into a Pipeline
+
+If you already have a pipeline project, use `--pipeline` to place the component directly inside it:
+
+```bash
+finforge create sentiment-scorer \
+    --pipeline ./components/pipelines/financial-risk-analysis \
+    --category machine-learning \
+    --description "Scores financial text sentiment on a 0–1 scale."
+```
+
+The component is created at `./components/pipelines/financial-risk-analysis/components/sentiment-scorer/`.
 
 ---
 
-## 4. Step-by-Step Implementation from Scratch
+## 5. Step-by-Step Implementation
 
-In this tutorial, we will build a complete, production-ready `text-cleaner` component from scratch.
+This tutorial walks through building a complete `text-cleaner` component using the CLI.
 
-### Step 1: Manifest Specification (`component.yaml`)
-Create `components/text-cleaner/component.yaml`. This file defines the identity, entrypoint, configuration schema, and I/O contract ports:
+### Step 1: Run `finforge create`
+
+```bash
+finforge create text-cleaner \
+    --destination ./components \
+    --category data-processing \
+    --version 0.1.0 \
+    --description "Cleans text by normalizing whitespace and optionally lowercasing." \
+    --author "FinForge Developer"
+```
+
+Expected output:
+
+```
+✓ Created component text-cleaner at ./components/text-cleaner
+```
+
+Install the scaffolded component in editable mode so imports work locally:
+
+```bash
+cd components/text-cleaner
+pip install -e .
+cd ../..
+```
+
+### Step 2: Edit the Manifest (`component.yaml`)
+
+The CLI already created `components/text-cleaner/component.yaml` with a starter template. Open it and update the `inputs`, `outputs`, and `config` sections to match your component's contract:
 
 ```yaml
 name: text-cleaner
@@ -158,8 +289,9 @@ config:
     description: Whether to convert output text to lowercase.
 ```
 
-### Step 2: Component Implementation (`component.py`)
-Create `components/text-cleaner/src/text_cleaner/component.py`. Subclass `BaseComponent` and implement `setup()`, `run()`, and `teardown()`:
+### Step 3: Implement the Component (`component.py`)
+
+The CLI generates a stub at `components/text-cleaner/src/text_cleaner/component.py`. Open it and fill in your `setup()`, `run()`, and `teardown()` logic:
 
 ```python
 """Implementation of TextCleanerComponent."""
@@ -255,7 +387,8 @@ __all__ = ["TextCleanerComponent"]
 ```
 
 ### Step 3: Packaging Definition (`pyproject.toml`)
-Create `components/text-cleaner/pyproject.toml` so the component can be packaged or installed in editable mode:
+
+The CLI already generates `components/text-cleaner/pyproject.toml`. It looks like this — only edit it if you need to add extra pip `dependencies`:
 
 ```toml
 [build-system]
@@ -275,8 +408,9 @@ dependencies = []
 dev = ["pytest>=8.0.0"]
 ```
 
-### Step 4: Writing the Usage Example (`examples/basic_usage.py`)
-Create `components/text-cleaner/examples/basic_usage.py` demonstrating how to instantiate, configure, run, and teardown the component:
+### Step 4: Write a Usage Example (`examples/basic_usage.py`)
+
+The CLI creates a stub at `components/text-cleaner/examples/basic_usage.py`. Update it to demonstrate your component's real inputs and config:
 
 ```python
 """Basic usage example for TextCleanerComponent."""
@@ -312,8 +446,9 @@ if __name__ == "__main__":
     main()
 ```
 
-### Step 5: Writing Comprehensive Unit Tests (`tests/test_component.py`)
-Create `components/text-cleaner/tests/test_component.py` to test lifecycle states, input errors, and transformations:
+### Step 5: Write Unit Tests (`tests/test_component.py`)
+
+The CLI generates `components/text-cleaner/tests/test_component.py` with a starter test. Extend it to cover lifecycle states, bad configs, missing inputs, and your core logic:
 
 ```python
 import pytest
@@ -367,13 +502,13 @@ def test_text_cleaner_missing_input() -> None:
 
 ---
 
-## 5. Testing & Validation
+## 6. Testing & Validation
 
 ### Running the FinForge Validation Suite (`finforge test`)
 FinForge provides an automated verification engine that checks manifest schemas, interface contracts, class hierarchies, and executes developer tests without modifying any code:
 
 ```bash
-python -m finforge.cli.main test components/text-cleaner
+finforge test components/text-cleaner
 ```
 
 Sample output:
@@ -400,17 +535,49 @@ Outcome: All component checks passed successfully.
 ```
 
 ### Direct Unit Testing via Pytest
-Install the component in editable mode, then run pytest:
 
 ```bash
+# Install the component first (only needed once)
 cd components/text-cleaner
 pip install -e .
-pytest tests/
+cd ../..
+
+# Run pytest
+pytest components/text-cleaner/tests/
+```
+
+You can also skip pytest and run only the FinForge validation stages:
+
+```bash
+finforge test components/text-cleaner --skip-developer-tests
 ```
 
 ---
 
-## 6. Pipeline Integration & Dynamic Discovery
+## 7. Running a Component Standalone
+
+Before integrating into a pipeline, test your component standalone using `finforge run-component`:
+
+```bash
+finforge run-component components/text-cleaner \
+    --input '{"input_data": "  Hello    FinForge   AI!  "}' \
+    --config '{"lowercase": true}'
+```
+
+You can also supply inputs via a JSON/YAML file:
+
+```bash
+# inputs.json
+# { "input_data": "  Hello    FinForge   AI!  " }
+
+finforge run-component components/text-cleaner \
+    --input-file inputs.json \
+    --config '{"lowercase": true}'
+```
+
+---
+
+## 8. Pipeline Integration & Dynamic Discovery
 
 ### Dynamic Discovery via `ComponentRegistry`
 Components can be registered dynamically by pointing to their directories:
@@ -460,7 +627,30 @@ print(result.node_outputs["cleaner_node"])
 
 ---
 
-## 7. Best Practices & Error Handling
+## 9. Alternative: Python SDK Scaffolding
+
+If you prefer to scaffold components programmatically (e.g. from a script or notebook), use the Python SDK instead of the CLI:
+
+```python
+from pathlib import Path
+from finforge.sdk import create_component_project
+
+project_path = create_component_project(
+    name="text-cleaner",
+    destination=Path("./components"),
+    description="Cleans text by normalizing whitespace and optionally lowercasing.",
+    category="data-processing",
+    version="0.1.0",
+    author="FinForge Developer",
+)
+print(f"Component created at: {project_path}")
+```
+
+This generates the exact same file structure as `finforge create`.
+
+---
+
+## 10. Best Practices & Error Handling
 
 1. **Keep Dependencies Minimal**: Components should rely on NumPy or Python standard libraries whenever possible.
 2. **Raise FinForge Built-in Exceptions**:

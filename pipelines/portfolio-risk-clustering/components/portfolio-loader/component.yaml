@@ -1,0 +1,33 @@
+name: portfolio-loader
+version: "0.1.0"
+description: "Loads asset risk metrics and exposures for portfolio analysis."
+
+api_version: "1"
+category: data-processing
+
+entrypoint: portfolio_loader.component:PortfolioLoaderComponent
+
+inputs:
+  portfolio_type:
+    type: string
+    required: false
+    description: Type of portfolio to simulate or load.
+
+outputs:
+  features:
+    type: array
+    description: Asset risk vectors [volatility, drawdown].
+  max_exposure:
+    type: float
+    description: Maximum single-asset dollar exposure.
+  asset_symbols:
+    type: array
+    description: List of asset symbols.
+
+config:
+  volatility_scale:
+    type: float
+    default: 1.0
+    description: Scale multiplier for asset volatility metrics.
+
+dependencies: []

@@ -453,7 +453,7 @@ edges:
 
 
 def test_export_markdown_format(tmp_path: Path) -> None:
-    """finforge export --format markdown generates markdown with embedded mermaid and tables."""
+    """finforge export --format markdown generates embedded mermaid and tables."""
     pipeline_file = tmp_path / "md_pipe.yaml"
     pipeline_file.write_text(
         """format_version: "1"
@@ -560,6 +560,7 @@ def test_run_component_synthetic_inputs(tmp_path: Path) -> None:
 def test_run_component_json_output(tmp_path: Path) -> None:
     """finforge run component --json outputs machine-readable execution result."""
     import json
+
     from finforge.sdk import create_component_project
 
     comp_dir = create_component_project("json-step", destination=tmp_path)
@@ -603,6 +604,7 @@ def test_run_component_alias(tmp_path: Path) -> None:
 def test_run_component_input_and_config_files(tmp_path: Path) -> None:
     """finforge run component supports --input-file and --config-file options."""
     import json
+
     from finforge.sdk import create_component_project
 
     comp_dir = create_component_project("file-step", destination=tmp_path)
@@ -647,7 +649,7 @@ def test_run_component_missing_manifest(tmp_path: Path) -> None:
 
 
 def test_run_component_contract_violation_failure(tmp_path: Path) -> None:
-    """finforge run component reports clear contract error when input violates schema."""
+    """finforge run component reports error when input violates schema."""
     from finforge.sdk import create_component_project
 
     comp_dir = create_component_project("bad-inputs", destination=tmp_path)
@@ -669,6 +671,7 @@ def test_run_component_contract_violation_failure(tmp_path: Path) -> None:
 def test_run_component_json_error(tmp_path: Path) -> None:
     """finforge run component --json outputs structured failure json on error."""
     import json
+
     from finforge.sdk import create_component_project
 
     comp_dir = create_component_project("err-step", destination=tmp_path)
@@ -746,6 +749,7 @@ def test_run_pipeline_directory_argument(tmp_path: Path) -> None:
 def test_run_pipeline_json_output(tmp_path: Path) -> None:
     """finforge run pipeline --json outputs structured pipeline execution json."""
     import json
+
     from finforge.sdk import create_pipeline_project
 
     pipe_dir = create_pipeline_project(
@@ -800,6 +804,7 @@ def test_run_pipeline_alias(tmp_path: Path) -> None:
 def test_run_pipeline_inputs_file(tmp_path: Path) -> None:
     """finforge run pipeline accepts inputs from file via --inputs-file."""
     import json
+
     from finforge.sdk import create_pipeline_project
 
     pipe_dir = create_pipeline_project(

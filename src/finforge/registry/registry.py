@@ -6,6 +6,7 @@ between component names, component classes, and their validated manifests.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -242,7 +243,7 @@ class ComponentRegistry:
 
     def discover(
         self,
-        search_paths: list[str | Path] | str | Path,
+        search_paths: Sequence[str | Path] | str | Path,
         overwrite: bool = False,
     ) -> list[str]:
         """Automatically find and register all components found within search paths.
@@ -285,8 +286,18 @@ class ComponentRegistry:
                 src_dir = comp_dir / "src"
                 candidate = src_dir if src_dir.is_dir() else comp_dir
                 cand_str = str(candidate.resolve())
-                if cand_str not in sys.path:
-                    sys.path.insert(0, cand_str)
+
+                # Ensure candidate path is at the front of sys.path
+                if cand_str in sys.path:
+                    sys.path.remove(cand_str)
+                sys.path.insert(0, cand_str)
+
+                # Clear module cache so the component is loaded from this candidate path
+                root_pkg = module_name.split(".")[0]
+                for k in list(sys.modules.keys()):
+                    if k == root_pkg or k.startswith(root_pkg + "."):
+                        sys.modules.pop(k, None)
+                importlib.invalidate_caches()
 
                 try:
                     mod = importlib.import_module(module_name)

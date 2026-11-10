@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "custom-kmeans"
+version = "0.1.0"
+description = "K-Means clustering algorithm implemented from scratch with Lloyd's iteration."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "FinForge AI Contributors" },
+]
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/my_kmeans"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

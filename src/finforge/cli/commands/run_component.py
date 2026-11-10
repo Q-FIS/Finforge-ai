@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import importlib
 import json
 import sys
@@ -18,7 +19,7 @@ from rich.table import Table
 from finforge.component import BaseComponent
 from finforge.contracts import validate_inputs, validate_outputs
 from finforge.exceptions import FinForgeError
-from finforge.manifest import ComponentManifest, PortDefinition, load_manifest
+from finforge.manifest import PortDefinition, load_manifest
 
 console = Console()
 
@@ -32,11 +33,16 @@ def _parse_payload(
     if file_path is not None:
         resolved_file = file_path.resolve()
         if not resolved_file.is_file():
-            raise FileNotFoundError(f"{payload_name.capitalize()} file '{resolved_file}' does not exist.")
+            raise FileNotFoundError(
+                f"{payload_name.capitalize()} file '{resolved_file}' does not exist."
+            )
         content = resolved_file.read_text(encoding="utf-8")
         parsed = yaml.safe_load(content)
         if not isinstance(parsed, dict):
-            raise ValueError(f"Content in '{resolved_file}' must be a JSON/YAML mapping/dict, got {type(parsed).__name__}.")
+            raise ValueError(
+                f"Content in '{resolved_file}' must be a JSON/YAML mapping/dict, "
+                f"got {type(parsed).__name__}."
+            )
         return parsed
 
     if value is None or not value.strip():
@@ -188,19 +194,24 @@ def run_component_cmd(
         comp_dir = target
         manifest_file = target / "component.yaml"
     else:
-        console.print(f"[bold red]Error:[/bold red] Component path '{target}' does not exist.")
+        console.print(
+            f"[bold red]Error:[/bold red] Component path '{target}' does not exist."
+        )
         raise typer.Exit(code=1)
 
     if not manifest_file.is_file():
         console.print(
-            f"[bold red]Error:[/bold red] Component manifest 'component.yaml' not found in '{comp_dir}'."
+            f"[bold red]Error:[/bold red] Component manifest 'component.yaml' "
+            f"not found in '{comp_dir}'."
         )
         raise typer.Exit(code=1)
 
     try:
         manifest = load_manifest(manifest_file)
     except Exception as exc:
-        console.print(f"[bold red]Error:[/bold red] Failed to load component manifest: {exc}")
+        console.print(
+            f"[bold red]Error:[/bold red] Failed to load component manifest: {exc}"
+        )
         raise typer.Exit(code=1) from exc
 
     if ":" not in manifest.entrypoint:
@@ -225,13 +236,15 @@ def run_component_cmd(
         cls = getattr(mod, class_name)
     except Exception as exc:
         console.print(
-            f"[bold red]Error:[/bold red] Failed to import entrypoint '{manifest.entrypoint}': {exc}"
+            f"[bold red]Error:[/bold red] "
+            f"Failed to import entrypoint '{manifest.entrypoint}': {exc}"
         )
         raise typer.Exit(code=1) from exc
 
     if not isinstance(cls, type) or not issubclass(cls, BaseComponent):
         console.print(
-            f"[bold red]Error:[/bold red] Class '{class_name}' must inherit from BaseComponent."
+            f"[bold red]Error:[/bold red] "
+            f"Class '{class_name}' must inherit from BaseComponent."
         )
         raise typer.Exit(code=1)
 
@@ -284,7 +297,9 @@ def run_component_cmd(
         duration_ms = (time.perf_counter() - t0) * 1000.0
 
         if not isinstance(outputs, dict):
-            raise TypeError(f"Component run() must return dict, got {type(outputs).__name__}.")
+            raise TypeError(
+                f"Component run() must return dict, got {type(outputs).__name__}."
+            )
 
         validate_outputs(outputs, manifest.outputs)
     except (FinForgeError, Exception) as exc:
@@ -300,15 +315,14 @@ def run_component_cmd(
             console.print(json.dumps(error_payload, indent=2))
         else:
             console.print(
-                f"\n[bold red]Execution Failure:[/bold red] Component '{manifest.name}' failed during run."
+                f"\n[bold red]Execution Failure:[/bold red] "
+                f"Component '{manifest.name}' failed during run."
             )
             console.print(f"  [red]✗[/red] {type(exc).__name__}: {exc}\n")
         raise typer.Exit(code=1) from exc
     finally:
-        try:
+        with contextlib.suppress(Exception):
             instance.teardown()
-        except Exception:
-            pass
 
     # 5. Output results
     if as_json:
@@ -352,7 +366,8 @@ def run_component_cmd(
     in_table.add_column("Supplied Value")
     for port_name in manifest.inputs:
         val = resolved_inputs.get(port_name, "<missing>")
-        val_str = json.dumps(val, default=str) if isinstance(val, (dict, list)) else str(val)
+        is_composite = isinstance(val, (dict, list))
+        val_str = json.dumps(val, default=str) if is_composite else str(val)
         if len(val_str) > 80:
             val_str = val_str[:77] + "..."
         in_table.add_row(port_name, manifest.inputs[port_name].type, val_str)
@@ -364,7 +379,8 @@ def run_component_cmd(
     out_table.add_column("Output Value")
     for port_name in manifest.outputs:
         val = outputs.get(port_name, "<missing>")
-        val_str = json.dumps(val, default=str) if isinstance(val, (dict, list)) else str(val)
+        is_composite = isinstance(val, (dict, list))
+        val_str = json.dumps(val, default=str) if is_composite else str(val)
         if len(val_str) > 100:
             val_str = val_str[:97] + "..."
         out_table.add_row(port_name, manifest.outputs[port_name].type, val_str)

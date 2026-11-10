@@ -1,0 +1,29 @@
+format_version: '1'
+name: portfolio-risk-clustering
+description: End-to-end financial portfolio risk clustering and assessment workflow
+metadata:
+  domain: finance
+  team: risk-analytics
+nodes:
+- id: loader
+  component: portfolio-loader
+  config:
+    volatility_scale: 1.0
+- id: clusterer
+  component: custom-kmeans
+  config:
+    n_clusters: 2
+    max_iter: 100
+- id: risk_evaluator
+  component: risk-calculator
+  config:
+    threshold: 35000.0
+edges:
+- source_node: loader
+  source_port: features
+  destination_node: clusterer
+  destination_port: data
+- source_node: loader
+  source_port: max_exposure
+  destination_node: risk_evaluator
+  destination_port: amount
