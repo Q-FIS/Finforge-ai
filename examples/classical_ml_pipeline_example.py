@@ -40,12 +40,17 @@ class ScratchStandardScalerComponent(BaseComponent):
         n_features = len(data[0])
 
         # Compute means
-        means = [sum(data[i][j] for i in range(n_samples)) / n_samples for j in range(n_features)]
+        means = [
+            sum(data[i][j] for i in range(n_samples)) / n_samples
+            for j in range(n_features)
+        ]
 
         # Compute standard deviations
         stds = []
         for j in range(n_features):
-            variance = sum((data[i][j] - means[j]) ** 2 for i in range(n_samples)) / max(1, n_samples)
+            variance = sum(
+                (data[i][j] - means[j]) ** 2 for i in range(n_samples)
+            ) / max(1, n_samples)
             std = math.sqrt(variance)
             stds.append(std if std > 1e-8 else 1.0)
 
@@ -80,7 +85,7 @@ class ScratchKMeansComponent(BaseComponent):
 
     @staticmethod
     def _euclidean_sq(p1: list[float], p2: list[float]) -> float:
-        return sum((a - b) ** 2 for a, b in zip(p1, p2))
+        return sum((a - b) ** 2 for a, b in zip(p1, p2, strict=True))
 
     def run(self, inputs: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         points: list[list[float]] = inputs["features"]
@@ -110,7 +115,9 @@ class ScratchKMeansComponent(BaseComponent):
 
             # Update step
             for idx in range(k):
-                cluster_pts = [points[i] for i in range(len(points)) if labels[i] == idx]
+                cluster_pts = [
+                    points[i] for i in range(len(points)) if labels[i] == idx
+                ]
                 if cluster_pts:
                     centroids[idx] = [
                         sum(cp[d] for cp in cluster_pts) / len(cluster_pts)
@@ -161,8 +168,12 @@ def build_and_run_ml_pipeline() -> None:
         description="Scratch Z-Score standard scaler",
         category="classical-ml",
         entrypoint="examples.classical_ml_pipeline_example:ScratchStandardScalerComponent",
-        inputs={"features": PortDefinition(type="array", description="2D feature matrix")},
-        outputs={"scaled_features": PortDefinition(type="array", description="Scaled matrix")},
+        inputs={
+            "features": PortDefinition(type="array", description="2D feature matrix")
+        },
+        outputs={
+            "scaled_features": PortDefinition(type="array", description="Scaled matrix")
+        },
         config={"with_std": ConfigDefinition(type="boolean", default=True)},
     )
     registry.register(ScratchStandardScalerComponent, manifest=scaler_manifest)
@@ -176,7 +187,9 @@ def build_and_run_ml_pipeline() -> None:
         inputs={"features": PortDefinition(type="array", description="Scaled matrix")},
         outputs={
             "labels": PortDefinition(type="array", description="Cluster assignments"),
-            "centroids": PortDefinition(type="array", description="Centroid coordinates"),
+            "centroids": PortDefinition(
+                type="array", description="Centroid coordinates"
+            ),
         },
         config={"k": ConfigDefinition(type="integer", default=2)},
     )
@@ -192,7 +205,11 @@ def build_and_run_ml_pipeline() -> None:
             "labels": PortDefinition(type="array", description="Cluster labels"),
             "centroids": PortDefinition(type="array", description="Cluster centroids"),
         },
-        outputs={"cluster_profile": PortDefinition(type="object", description="Summary metrics")},
+        outputs={
+            "cluster_profile": PortDefinition(
+                type="object", description="Summary metrics"
+            )
+        },
     )
     registry.register(ScratchClusterProfilerComponent, manifest=profiler_manifest)
 

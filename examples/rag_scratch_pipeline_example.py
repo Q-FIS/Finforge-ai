@@ -82,9 +82,9 @@ class ScratchBM25RetrieverComponent(BaseComponent):
             return {"retrieved_chunks": []}
 
         # Document frequencies
-        N = len(chunks)
+        n_docs = len(chunks)
         doc_tokens = [self._tokenize(c) for c in chunks]
-        avgdl = sum(len(dt) for dt in doc_tokens) / max(1, N)
+        avgdl = sum(len(dt) for dt in doc_tokens) / max(1, n_docs)
 
         df: dict[str, int] = {}
         for dt in doc_tokens:
@@ -102,10 +102,12 @@ class ScratchBM25RetrieverComponent(BaseComponent):
             for q in q_tokens:
                 if q in df:
                     # Robertson-Spärck Jones IDF
-                    idf = math.log((N - df[q] + 0.5) / (df[q] + 0.5) + 1.0)
+                    idf = math.log((n_docs - df[q] + 0.5) / (df[q] + 0.5) + 1.0)
                     tf = tf_map.get(q, 0)
                     numerator = tf * (self._k1 + 1)
-                    denominator = tf + self._k1 * (1 - self._b + self._b * (doc_len / avgdl))
+                    denominator = tf + self._k1 * (
+                        1 - self._b + self._b * (doc_len / avgdl)
+                    )
                     score += idf * (numerator / max(0.001, denominator))
 
             scores.append((score, chunks[i]))
@@ -158,7 +160,9 @@ def build_and_run_rag_pipeline() -> None:
         category="rag",
         entrypoint="examples.rag_scratch_pipeline_example:ScratchChunkerComponent",
         inputs={"document": PortDefinition(type="string", description="Raw corpus")},
-        outputs={"chunks": PortDefinition(type="array", description="List of string chunks")},
+        outputs={
+            "chunks": PortDefinition(type="array", description="List of string chunks")
+        },
         config={"chunk_size": ConfigDefinition(type="integer", default=30)},
     )
     registry.register(ScratchChunkerComponent, manifest=chunker_manifest)
@@ -173,7 +177,9 @@ def build_and_run_rag_pipeline() -> None:
             "chunks": PortDefinition(type="array", description="Corpus chunks"),
             "query": PortDefinition(type="string", description="Search query"),
         },
-        outputs={"retrieved_chunks": PortDefinition(type="array", description="Top chunks")},
+        outputs={
+            "retrieved_chunks": PortDefinition(type="array", description="Top chunks")
+        },
         config={"top_k": ConfigDefinition(type="integer", default=2)},
     )
     registry.register(ScratchBM25RetrieverComponent, manifest=bm25_manifest)
@@ -186,10 +192,18 @@ def build_and_run_rag_pipeline() -> None:
         entrypoint="examples.rag_scratch_pipeline_example:ScratchPromptSynthesizerComponent",
         inputs={
             "query": PortDefinition(type="string", description="User question"),
-            "retrieved_chunks": PortDefinition(type="array", description="Context passages"),
+            "retrieved_chunks": PortDefinition(
+                type="array", description="Context passages"
+            ),
         },
-        outputs={"grounded_prompt": PortDefinition(type="string", description="Final prompt")},
-        config={"system_role": ConfigDefinition(type="string", default="Senior Equity Analyst")},
+        outputs={
+            "grounded_prompt": PortDefinition(type="string", description="Final prompt")
+        },
+        config={
+            "system_role": ConfigDefinition(
+                type="string", default="Senior Equity Analyst"
+            )
+        },
     )
     registry.register(ScratchPromptSynthesizerComponent, manifest=synth_manifest)
 
@@ -209,10 +223,14 @@ def build_and_run_rag_pipeline() -> None:
 
     # 3. Execute Pipeline
     doc_text = (
-        "Goldman Sachs declared quarterly earnings beating consensus estimates with $12.7B net revenue. "
-        "However, management noted rising credit provision buffers for corporate debt defaults. "
-        "Meanwhile, commercial real estate exposure showed signs of maturity pressure and refinancing drag. "
-        "Asset and wealth management generated record management fees of $2.4B, balancing volatility."
+        "Goldman Sachs declared quarterly earnings beating consensus estimates "
+        "with $12.7B net revenue. "
+        "However, management noted rising credit provision buffers for "
+        "corporate debt defaults. "
+        "Meanwhile, commercial real estate exposure showed signs of maturity "
+        "pressure and refinancing drag. "
+        "Asset and wealth management generated record management fees of "
+        "$2.4B, balancing volatility."
     )
     user_query = "What risks and credit provision buffers did management report?"
 

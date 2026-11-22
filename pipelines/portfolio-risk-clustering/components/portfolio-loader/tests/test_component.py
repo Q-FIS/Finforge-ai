@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import pytest
+from portfolio_loader.component import PortfolioLoaderComponent
 
 from finforge.exceptions import ComponentConfigurationError, ComponentLifecycleError
-from portfolio_loader.component import PortfolioLoaderComponent
 
 
 def test_portfolio_loader_lifecycle() -> None:

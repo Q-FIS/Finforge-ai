@@ -125,14 +125,16 @@ class SentimentScorerComponent(BaseComponent):
         raw_threshold = config.get("sentiment_threshold", 0.1)
         if not isinstance(raw_threshold, (int, float)):
             raise ComponentConfigurationError(
-                f"Invalid 'sentiment_threshold': expected numeric, got {type(raw_threshold).__name__}"
+                f"Invalid 'sentiment_threshold': expected numeric, "
+                f"got {type(raw_threshold).__name__}"
             )
         self._sentiment_threshold = float(raw_threshold)
 
         raw_scaling = config.get("confidence_scaling", 1.0)
         if not isinstance(raw_scaling, (int, float)):
             raise ComponentConfigurationError(
-                f"Invalid 'confidence_scaling': expected numeric, got {type(raw_scaling).__name__}"
+                f"Invalid 'confidence_scaling': expected numeric, "
+                f"got {type(raw_scaling).__name__}"
             )
         self._confidence_scaling = float(raw_scaling)
 
@@ -179,7 +181,8 @@ class SentimentScorerComponent(BaseComponent):
         for idx, item in enumerate(texts):
             if not isinstance(item, str):
                 raise ComponentExecutionError(
-                    f"Item at index {idx} in 'texts' must be a string, got {type(item).__name__}."
+                    f"Item at index {idx} in 'texts' must be a string, "
+                    f"got {type(item).__name__}."
                 )
 
             tokens = re.findall(r"\b[a-zA-Z]+(?:-[a-zA-Z]+)*\b", item.lower())
@@ -190,10 +193,7 @@ class SentimentScorerComponent(BaseComponent):
             unc_hits = sum(1 for token in tokens if token in UNCERTAINTY_TERMS)
 
             total_hits = pos_hits + neg_hits
-            if total_hits > 0:
-                compound = (pos_hits - neg_hits) / total_hits
-            else:
-                compound = 0.0
+            compound = (pos_hits - neg_hits) / total_hits if total_hits > 0 else 0.0
 
             pos_score = min(pos_hits / token_count, 1.0)
             neg_score = min(neg_hits / token_count, 1.0)

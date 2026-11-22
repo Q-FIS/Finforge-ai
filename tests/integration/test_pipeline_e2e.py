@@ -106,9 +106,7 @@ def test_registry() -> ComponentRegistry:
         api_version="1",
         category="evaluation",
         entrypoint="test:SummaryReportComponent",
-        inputs={
-            "flagged": PortDefinition(type="array", description="Flagged records")
-        },
+        inputs={"flagged": PortDefinition(type="array", description="Flagged records")},
         outputs={
             "summary": PortDefinition(type="object", description="Summary metrics")
         },

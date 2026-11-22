@@ -46,9 +46,7 @@ def main() -> None:
     # 3. Execute via the Pipeline run() method
     test_amounts = [3200.0, 12500.0]
     for amt in test_amounts:
-        result = pipeline.run(
-            inputs={"risk_evaluator": {"amount": amt}}
-        )
+        result = pipeline.run(inputs={"risk_evaluator": {"amount": amt}})
         output = result.outputs["risk_evaluator"]
         print(f"3. Executed with amount=${amt:,.2f} --> Output: {output}")
 

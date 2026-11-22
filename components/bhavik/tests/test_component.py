@@ -1,14 +1,14 @@
 """Unit tests for BhavikComponent."""
 
 import pytest
+from bhavik.component import BhavikComponent
+
 from finforge.component import BaseComponent
 from finforge.exceptions import (
     ComponentConfigurationError,
     ComponentExecutionError,
     ComponentLifecycleError,
 )
-
-from bhavik.component import BhavikComponent
 
 
 def test_component_inheritance() -> None:

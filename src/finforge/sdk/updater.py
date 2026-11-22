@@ -419,21 +419,21 @@ class ComponentCodeAnalyzer:
                 and isinstance(node.value, ast.Dict)
             ):
                 for k, v in zip(node.value.keys, node.value.values, strict=False):
-                        if isinstance(k, ast.Constant) and isinstance(k.value, str):
-                            out_name = k.value
-                            out_type = self._infer_output_type(v)
-                            if out_name not in discovered["outputs"]:
-                                discovered["outputs"][out_name] = {
-                                    "type": out_type,
-                                    "description": f"Output port '{out_name}'.",
-                                }
-                            else:
-                                if (
-                                    discovered["outputs"][out_name]["type"]
-                                    in ("any", "string")
-                                    and out_type != "any"
-                                ):
-                                    discovered["outputs"][out_name]["type"] = out_type
+                    if isinstance(k, ast.Constant) and isinstance(k.value, str):
+                        out_name = k.value
+                        out_type = self._infer_output_type(v)
+                        if out_name not in discovered["outputs"]:
+                            discovered["outputs"][out_name] = {
+                                "type": out_type,
+                                "description": f"Output port '{out_name}'.",
+                            }
+                        else:
+                            if (
+                                discovered["outputs"][out_name]["type"]
+                                in ("any", "string")
+                                and out_type != "any"
+                            ):
+                                discovered["outputs"][out_name]["type"] = out_type
 
     def _inspect_isinstance_check(
         self, call_node: ast.Call, target_dict: dict[str, Any]

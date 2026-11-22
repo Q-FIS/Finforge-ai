@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import pytest
+from my_kmeans.component import KMeansComponent
 
 from finforge.exceptions import (
     ComponentConfigurationError,
     ComponentExecutionError,
     ComponentLifecycleError,
 )
-from my_kmeans.component import KMeansComponent
 
 
 def test_kmeans_lifecycle() -> None:

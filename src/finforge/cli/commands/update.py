@@ -174,8 +174,7 @@ def update_cmd(
         elif cr.is_new:
             has_diffs = True
             change_desc = (
-                "; ".join(c.summary() for c in cr.changes)
-                or "+ Generated new manifest"
+                "; ".join(c.summary() for c in cr.changes) or "+ Generated new manifest"
             )
             table.add_row(
                 "Component",
@@ -189,8 +188,7 @@ def update_cmd(
         elif cr.is_updated:
             has_diffs = True
             change_desc = (
-                "; ".join(c.summary() for c in cr.changes)
-                or "~ Updated to match code"
+                "; ".join(c.summary() for c in cr.changes) or "~ Updated to match code"
             )
             table.add_row(
                 "Component",
@@ -224,8 +222,7 @@ def update_cmd(
         elif pr.is_new:
             has_diffs = True
             change_desc = (
-                "; ".join(c.summary() for c in pr.changes)
-                or "+ Generated new manifest"
+                "; ".join(c.summary() for c in pr.changes) or "+ Generated new manifest"
             )
             table.add_row(
                 "Pipeline",
@@ -239,8 +236,7 @@ def update_cmd(
         elif pr.is_updated:
             has_diffs = True
             change_desc = (
-                "; ".join(c.summary() for c in pr.changes)
-                or "~ Synchronized topology"
+                "; ".join(c.summary() for c in pr.changes) or "~ Synchronized topology"
             )
             table.add_row(
                 "Pipeline",

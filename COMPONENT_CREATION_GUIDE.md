@@ -615,9 +615,7 @@ pipeline = builder.build()
 executor = PipelineExecutor(pipeline)
 result = executor.execute(
     initial_inputs={
-        "cleaner_node": {
-            "input_data": "  Financial   Document   Text   Extraction  "
-        }
+        "cleaner_node": {"input_data": "  Financial   Document   Text   Extraction  "}
     }
 )
 

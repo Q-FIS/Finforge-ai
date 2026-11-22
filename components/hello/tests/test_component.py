@@ -1,14 +1,14 @@
 """Unit tests for HelloComponent."""
 
 import pytest
+from hello.component import HelloComponent
+
 from finforge.component import BaseComponent
 from finforge.exceptions import (
     ComponentConfigurationError,
     ComponentExecutionError,
     ComponentLifecycleError,
 )
-
-from hello.component import HelloComponent
 
 
 def test_component_inheritance() -> None:

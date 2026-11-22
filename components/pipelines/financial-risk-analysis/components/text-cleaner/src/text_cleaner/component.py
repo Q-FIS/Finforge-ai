@@ -18,19 +18,23 @@ DEFAULT_FINANCIAL_TEXTS = [
         "and record enterprise net margins."
     ),
     (
-        "Credit rating downgraded to B- amid severe liquidity constraints, debt covenants breach, "
+        "Credit rating downgraded to B- amid severe liquidity constraints, "
+        "debt covenants breach, "
         "and looming bond maturity wall."
     ),
     (
-        "The firm received an SEC subpoena initiating an enforcement investigation regarding "
+        "The firm received an SEC subpoena initiating an enforcement "
+        "investigation regarding "
         "consumer compliance practices and internal accounting controls."
     ),
     (
-        "Supply chain disruptions and persistent inflationary labor headwinds may temper operating margins "
+        "Supply chain disruptions and persistent inflationary labor headwinds "
+        "may temper operating margins "
         "across European manufacturing divisions."
     ),
     (
-        "Aggressive central bank rate hikes and severe yield curve inversion trigger heightened "
+        "Aggressive central bank rate hikes and severe yield curve inversion "
+        "trigger heightened "
         "equity volatility and market asset repricing."
     ),
 ]
@@ -64,14 +68,16 @@ class TextCleanerComponent(BaseComponent):
         strip_html = config.get("strip_html", True)
         if not isinstance(strip_html, bool):
             raise ComponentConfigurationError(
-                f"Invalid 'strip_html': expected boolean, got {type(strip_html).__name__}"
+                f"Invalid 'strip_html': expected boolean, "
+                f"got {type(strip_html).__name__}"
             )
         self._strip_html = strip_html
 
         remove_disclaimers = config.get("remove_disclaimers", True)
         if not isinstance(remove_disclaimers, bool):
             raise ComponentConfigurationError(
-                f"Invalid 'remove_disclaimers': expected boolean, got {type(remove_disclaimers).__name__}"
+                f"Invalid 'remove_disclaimers': expected boolean, "
+                f"got {type(remove_disclaimers).__name__}"
             )
         self._remove_disclaimers = remove_disclaimers
 
@@ -113,7 +119,8 @@ class TextCleanerComponent(BaseComponent):
         for idx, item in enumerate(raw_texts):
             if not isinstance(item, str):
                 raise ComponentExecutionError(
-                    f"Item at index {idx} in 'texts' must be a string, got {type(item).__name__}."
+                    f"Item at index {idx} in 'texts' must be a string, "
+                    f"got {type(item).__name__}."
                 )
 
             text = item
@@ -126,7 +133,8 @@ class TextCleanerComponent(BaseComponent):
             # Strip boilerplate legal disclaimers if present
             if self._remove_disclaimers:
                 text = re.sub(
-                    r"(?i)\bthis (press release|document|filing) contains forward-looking statements.*",
+                    r"(?i)\bthis (press release|document|filing) "
+                    r"contains forward-looking statements.*",
                     "",
                     text,
                 )

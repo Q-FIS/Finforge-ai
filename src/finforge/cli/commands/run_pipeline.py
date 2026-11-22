@@ -370,9 +370,7 @@ def run_pipeline_cmd(
             out_panel_lines.append(f"[bold cyan]{nid}:[/bold cyan]")
             for port, val in nout.items():
                 is_composite = isinstance(val, (dict, list))
-                val_repr = (
-                    json.dumps(val, default=str) if is_composite else str(val)
-                )
+                val_repr = json.dumps(val, default=str) if is_composite else str(val)
                 if len(val_repr) > 100:
                     val_repr = val_repr[:97] + "..."
                 out_panel_lines.append(f"  • [magenta]{port}[/magenta]: {val_repr}")

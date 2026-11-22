@@ -31,7 +31,8 @@ class BhavikComponent(BaseComponent):
         raw_scale = config.get("scale_factor", 1.0)
         if not isinstance(raw_scale, (int, float)):
             raise ComponentConfigurationError(
-                f"Invalid 'scale_factor': expected numeric, got {type(raw_scale).__name__}"
+                f"Invalid 'scale_factor': expected numeric, "
+                f"got {type(raw_scale).__name__}"
             )
         self._scale_factor = float(raw_scale)
         self._is_configured = True

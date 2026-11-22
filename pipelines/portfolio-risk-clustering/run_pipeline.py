@@ -12,7 +12,7 @@ for comp_path in local_comps.glob("*/src"):
     if comp_path.is_dir() and str(comp_path) not in sys.path:
         sys.path.insert(0, str(comp_path))
 
-from finforge import Pipeline, ComponentRegistry
+from finforge import ComponentRegistry, Pipeline  # noqa: E402
 
 
 def main() -> None:
