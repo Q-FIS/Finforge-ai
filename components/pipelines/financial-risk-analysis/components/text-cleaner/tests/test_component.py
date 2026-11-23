@@ -1,14 +1,14 @@
 """Unit tests for TextCleanerComponent."""
 
 import pytest
+from text_cleaner.component import TextCleanerComponent
+
 from finforge.component import BaseComponent
 from finforge.exceptions import (
     ComponentConfigurationError,
     ComponentExecutionError,
     ComponentLifecycleError,
 )
-
-from text_cleaner.component import TextCleanerComponent
 
 
 def test_component_inheritance() -> None:

@@ -1,14 +1,14 @@
 """Unit tests for RiskTaggerComponent."""
 
 import pytest
+from risk_tagger.component import RiskTaggerComponent
+
 from finforge.component import BaseComponent
 from finforge.exceptions import (
     ComponentConfigurationError,
     ComponentExecutionError,
     ComponentLifecycleError,
 )
-
-from risk_tagger.component import RiskTaggerComponent
 
 
 def test_component_inheritance() -> None:
@@ -30,7 +30,10 @@ def test_component_lifecycle_execution() -> None:
 
     sample_results = [
         {
-            "text": "Credit rating downgraded to B- amid severe liquidity constraints and debt covenant breach.",
+            "text": (
+                "Credit rating downgraded to B- amid severe liquidity "
+                "constraints and debt covenant breach."
+            ),
             "compound_score": -0.8,
             "uncertainty_score": 0.4,
         },
@@ -41,7 +44,9 @@ def test_component_lifecycle_execution() -> None:
         },
     ]
 
-    output = component.run({"sentiment_results": sample_results}, context={"run_id": "test-1"})
+    output = component.run(
+        {"sentiment_results": sample_results}, context={"run_id": "test-1"}
+    )
     assert "tagged_items" in output
     assert "risk_assessment" in output
 

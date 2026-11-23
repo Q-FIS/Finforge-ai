@@ -39,7 +39,9 @@ def test_all_components_pass_framework_validation() -> None:
         Path("components/tfidf-vectorizer"),
         Path("components/examples/custom_kmeans"),
         Path("components/pipelines/financial-risk-analysis/components/risk-tagger"),
-        Path("components/pipelines/financial-risk-analysis/components/sentiment-scorer"),
+        Path(
+            "components/pipelines/financial-risk-analysis/components/sentiment-scorer"
+        ),
         Path("components/pipelines/financial-risk-analysis/components/text-cleaner"),
     ]
 

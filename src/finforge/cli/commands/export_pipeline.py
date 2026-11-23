@@ -100,31 +100,35 @@ def generate_markdown(
     if doc.description:
         lines.extend([f"> {doc.description}", ""])
 
-    lines.extend([
-        "## Topology Diagram",
-        "",
-        "```mermaid",
-        mermaid_block,
-        "```",
-        "",
-        "## Nodes & Components",
-        "",
-        "| Node ID | Component | Config Keys |",
-        "| :--- | :--- | :--- |",
-    ])
+    lines.extend(
+        [
+            "## Topology Diagram",
+            "",
+            "```mermaid",
+            mermaid_block,
+            "```",
+            "",
+            "## Nodes & Components",
+            "",
+            "| Node ID | Component | Config Keys |",
+            "| :--- | :--- | :--- |",
+        ]
+    )
 
     for node in doc.nodes:
         cfg = ", ".join(f"`{k}`" for k in node.config) if node.config else "*None*"
         lines.append(f"| `{node.id}` | `{node.component}` | {cfg} |")
 
     if doc.edges:
-        lines.extend([
-            "",
-            "## Port Connections",
-            "",
-            "| Source | Destination |",
-            "| :--- | :--- |",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Port Connections",
+                "",
+                "| Source | Destination |",
+                "| :--- | :--- |",
+            ]
+        )
         for edge in doc.edges:
             src_str = f"{edge.source_node}.{edge.source_port}"
             dst_str = f"{edge.destination_node}.{edge.destination_port}"

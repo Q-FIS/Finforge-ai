@@ -31,23 +31,28 @@ for comp_path in local_comps.glob("*/src"):
     if comp_path.is_dir() and str(comp_path) not in sys.path:
         sys.path.insert(0, str(comp_path))
 
-from finforge import ComponentRegistry, Pipeline
+from finforge import ComponentRegistry, Pipeline  # noqa: E402
 
 DEMO_PORTFOLIO_DISPATCHES = [
     (
-        "Quarterly net profit surged 34% YoY with record operating cash flow and resilient enterprise cloud demand."
+        "Quarterly net profit surged 34% YoY with record operating cash flow "
+        "and resilient enterprise cloud demand."
     ),
     (
-        "Credit rating downgraded to B- amid severe liquidity constraints, bond covenants breach, and looming debt maturity wall."
+        "Credit rating downgraded to B- amid severe liquidity constraints, "
+        "bond covenants breach, and looming debt maturity wall."
     ),
     (
-        "The firm received an SEC subpoena initiating a formal regulatory enforcement investigation into internal accounting controls."
+        "The firm received an SEC subpoena initiating a formal regulatory "
+        "enforcement investigation into internal accounting controls."
     ),
     (
-        "Central bank interest rate hikes and yield curve inversion continue to drive equity volatility and macroeconomic asset repricing."
+        "Central bank interest rate hikes and yield curve inversion continue to "
+        "drive equity volatility and macroeconomic asset repricing."
     ),
     (
-        "Severe supply chain disruptions and freight bottleneck outages risk delaying product shipments across key regional markets."
+        "Severe supply chain disruptions and freight bottleneck outages risk "
+        "delaying product shipments across key regional markets."
     ),
 ]
 
@@ -80,7 +85,10 @@ def run_demo(custom_texts: list[str] | None = None) -> int:
 
     # 3. Prepare inputs
     texts_to_analyze = custom_texts or DEMO_PORTFOLIO_DISPATCHES
-    print(f"[3] Ingesting {len(texts_to_analyze)} financial dispatches for risk analysis...")
+    print(
+        f"[3] Ingesting {len(texts_to_analyze)} financial dispatches "
+        "for risk analysis..."
+    )
 
     # 4. Execute pipeline
     result = pipeline.run(
@@ -89,7 +97,10 @@ def run_demo(custom_texts: list[str] | None = None) -> int:
     )
 
     print("\n" + "=" * 76)
-    print(f" Execution Status: {result.status.value.upper()}  (Duration: {result.duration_ms:.2f}ms)")
+    print(
+        f" Execution Status: {result.status.value.upper()}  "
+        f"(Duration: {result.duration_ms:.2f}ms)"
+    )
     print("=" * 76)
 
     if not result.success:
@@ -101,7 +112,10 @@ def run_demo(custom_texts: list[str] | None = None) -> int:
     # Print Node Timings
     print("\n--- Pipeline Node Telemetry ---")
     for node_id, n_res in result.node_results.items():
-        print(f"  ✓ [{node_id}] status={n_res.status.value:<9} duration={n_res.duration_ms:.2f}ms")
+        print(
+            f"  ✓ [{node_id}] status={n_res.status.value:<9} "
+            f"duration={n_res.duration_ms:.2f}ms"
+        )
 
     # Extract Outputs
     tagged_items = result.get_output("risk_tagger", "tagged_items") or []
@@ -116,7 +130,7 @@ def run_demo(custom_texts: list[str] | None = None) -> int:
         score = item.get("risk_score", 0.0)
         sev = item.get("severity", "UNKNOWN")
         compound = item.get("sentiment_compound", 0.0)
-        print(f"\nItem #{idx}: \"{txt}\"")
+        print(f'\nItem #{idx}: "{txt}"')
         print(f"  • Sentiment Polarity : {compound:+.2f}")
         print(f"  • Identified Risks   : {cats}")
         print(f"  • Risk Score / Tier  : {score:.1f}/100 [{sev}]")

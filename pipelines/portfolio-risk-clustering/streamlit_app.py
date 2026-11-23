@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any
 
 import streamlit as st
-import yaml
 
 # -----------------------------------------------------------------------------
 # Configuration and Path Resolution
@@ -35,8 +34,8 @@ for parent in PIPELINE_DIR.parents:
             if comp_path.is_dir() and str(comp_path) not in sys.path:
                 sys.path.insert(0, str(comp_path))
 
-from finforge import ComponentRegistry, Pipeline
-from finforge.pipeline.serialization import (
+from finforge import ComponentRegistry, Pipeline  # noqa: E402
+from finforge.pipeline.serialization import (  # noqa: E402
     PipelineDocument,
     compute_document_execution_order,
     load_pipeline_document,
@@ -272,14 +271,10 @@ with tab_run:
 
     # Advanced input overrides
     with st.expander("🛠️ Advanced Input Overrides (JSON Mapping)", expanded=False):
-        st.caption(
-            "Provide custom input overrides as `{\"node_id\": {\"port\": val}}`:"
-        )
+        st.caption('Provide custom input overrides as `{"node_id": {"port": val}}`:')
         raw_override = st.text_area("Input Overrides JSON", value="{}", height=100)
         try:
-            override_parsed = (
-                json.loads(raw_override) if raw_override.strip() else {}
-            )
+            override_parsed = json.loads(raw_override) if raw_override.strip() else {}
             if isinstance(override_parsed, dict):
                 for nid, ports in override_parsed.items():
                     if isinstance(ports, dict):
@@ -350,9 +345,7 @@ with tab_run:
                                         and len(port_val) > 0
                                         and isinstance(port_val[0], dict)
                                     ):
-                                        st.dataframe(
-                                            port_val, use_container_width=True
-                                        )
+                                        st.dataframe(port_val, use_container_width=True)
                                     elif isinstance(port_val, (int, float, str, bool)):
                                         st.info(f"{port_val}")
                                     else:
@@ -381,6 +374,7 @@ with tab_run:
             except Exception as exc:
                 st.error(f"Execution Error: {exc}")
                 import traceback
+
                 st.code(traceback.format_exc(), language="python")
 
 # -----------------------------------------------------------------------------
@@ -392,7 +386,7 @@ with tab_dag:
     # Render Graphviz DOT
     dot_lines = [
         f'digraph "{doc.name}" {{',
-        '  rankdir=LR;',
+        "  rankdir=LR;",
         '  graph [fontname="sans-serif", bgcolor="transparent"];',
         '  node [shape=box, style="rounded,filled", fillcolor="#eff6ff", '
         'color="#3b82f6", fontname="sans-serif", fontsize=11, margin="0.25,0.15"];',
@@ -440,9 +434,7 @@ with tab_nodes:
             m = registry.get_manifest(n.component)
             comp_details = f"{m.name} v{m.version} ({m.category})"
             if m.inputs:
-                inputs_desc = ", ".join(
-                    f"{p} ({d.type})" for p, d in m.inputs.items()
-                )
+                inputs_desc = ", ".join(f"{p} ({d.type})" for p, d in m.inputs.items())
             if m.outputs:
                 outputs_desc = ", ".join(
                     f"{p} ({d.type})" for p, d in m.outputs.items()
@@ -450,14 +442,16 @@ with tab_nodes:
         except Exception:
             pass
 
-        records.append({
-            "Node ID": n.id,
-            "Component": n.component,
-            "Manifest": comp_details,
-            "Inputs": inputs_desc,
-            "Outputs": outputs_desc,
-            "Config": json.dumps(n.config),
-        })
+        records.append(
+            {
+                "Node ID": n.id,
+                "Component": n.component,
+                "Manifest": comp_details,
+                "Inputs": inputs_desc,
+                "Outputs": outputs_desc,
+                "Config": json.dumps(n.config),
+            }
+        )
 
     st.dataframe(records, use_container_width=True)
 

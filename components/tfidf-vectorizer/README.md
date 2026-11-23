@@ -97,8 +97,12 @@ registry.register(
 pipeline = Pipeline("tfidf-demo", registry=registry)
 pipeline.add("tfidf", "tfidf-vectorizer", config={"idf_convention": "smooth"})
 result = pipeline.run(
-    inputs={"tfidf": {"documents": [["revenue", "fy2025"], ["dividend", "fy2025"]],
-                      "queries": [["revenue"]]}}
+    inputs={
+        "tfidf": {
+            "documents": [["revenue", "fy2025"], ["dividend", "fy2025"]],
+            "queries": [["revenue"]],
+        }
+    }
 )
 print(result.outputs["tfidf"]["query_vectors"])
 ```

@@ -65,7 +65,7 @@ class KMeansComponent(BaseComponent):
     @staticmethod
     def _dist_sq(p1: list[float], p2: list[float]) -> float:
         """Squared Euclidean distance between two vectors."""
-        return sum((a - b) ** 2 for a, b in zip(p1, p2))
+        return sum((a - b) ** 2 for a, b in zip(p1, p2, strict=True))
 
     def run(
         self,
@@ -107,7 +107,8 @@ class KMeansComponent(BaseComponent):
         for idx, row in enumerate(raw_data):
             if not isinstance(row, (list, tuple)):
                 raise ComponentExecutionError(
-                    f"Row {idx} in 'data' must be an array/list, got {type(row).__name__}."
+                    f"Row {idx} in 'data' must be an array/list, "
+                    f"got {type(row).__name__}."
                 )
             try:
                 converted_row = [float(x) for x in row]
@@ -166,9 +167,7 @@ class KMeansComponent(BaseComponent):
             max_centroid_shift = 0.0
 
             for c_idx in range(k):
-                cluster_pts = [
-                    data[i] for i, lbl in enumerate(labels) if lbl == c_idx
-                ]
+                cluster_pts = [data[i] for i, lbl in enumerate(labels) if lbl == c_idx]
                 if cluster_pts:
                     updated_c = [
                         sum(p[j] for p in cluster_pts) / len(cluster_pts)

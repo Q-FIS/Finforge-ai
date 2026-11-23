@@ -1,14 +1,14 @@
 """Unit tests for SentimentScorerComponent."""
 
 import pytest
+from sentiment_scorer.component import SentimentScorerComponent
+
 from finforge.component import BaseComponent
 from finforge.exceptions import (
     ComponentConfigurationError,
     ComponentExecutionError,
     ComponentLifecycleError,
 )
-
-from sentiment_scorer.component import SentimentScorerComponent
 
 
 def test_component_inheritance() -> None:

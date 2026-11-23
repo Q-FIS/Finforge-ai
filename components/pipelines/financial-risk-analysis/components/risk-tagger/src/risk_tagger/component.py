@@ -81,11 +81,22 @@ RISK_CATEGORIES: dict[str, list[str]] = {
 }
 
 RECOMMENDATIONS: dict[str, str] = {
-    "Credit Risk": "Initiate credit facility review and evaluate debt covenant compliance margins.",
-    "Market Risk": "Execute interest rate hedging and rebalance asset sensitivity exposure.",
-    "Liquidity Risk": "Implement liquidity buffer stress tests and secure contingent credit lines.",
-    "Operational Risk": "Audit critical vendor supply chains and enhance operational failover redundancy.",
-    "Regulatory Risk": "Engage regulatory counsel and execute comprehensive internal control audit.",
+    "Credit Risk": (
+        "Initiate credit facility review and evaluate debt covenant compliance margins."
+    ),
+    "Market Risk": (
+        "Execute interest rate hedging and rebalance asset sensitivity exposure."
+    ),
+    "Liquidity Risk": (
+        "Implement liquidity buffer stress tests and secure contingent credit lines."
+    ),
+    "Operational Risk": (
+        "Audit critical vendor supply chains and enhance "
+        "operational failover redundancy."
+    ),
+    "Regulatory Risk": (
+        "Engage regulatory counsel and execute comprehensive internal control audit."
+    ),
 }
 
 
@@ -109,14 +120,16 @@ class RiskTaggerComponent(BaseComponent):
         raw_threshold = config.get("risk_threshold", 50.0)
         if not isinstance(raw_threshold, (int, float)):
             raise ComponentConfigurationError(
-                f"Invalid 'risk_threshold': expected numeric, got {type(raw_threshold).__name__}"
+                f"Invalid 'risk_threshold': expected numeric, "
+                f"got {type(raw_threshold).__name__}"
             )
         self._risk_threshold = float(raw_threshold)
 
         raw_strict = config.get("strict_mode", False)
         if not isinstance(raw_strict, bool):
             raise ComponentConfigurationError(
-                f"Invalid 'strict_mode': expected boolean, got {type(raw_strict).__name__}"
+                f"Invalid 'strict_mode': expected boolean, "
+                f"got {type(raw_strict).__name__}"
             )
         self._strict_mode = raw_strict
 
@@ -130,7 +143,8 @@ class RiskTaggerComponent(BaseComponent):
         """Tag items with risk categories and compute composite assessment.
 
         Args:
-            inputs: Dictionary containing 'sentiment_results' and optional 'sentiment_summary'.
+            inputs: Dictionary containing 'sentiment_results' and optional
+                'sentiment_summary'.
             context: Runtime execution context metadata.
 
         Returns:
@@ -153,18 +167,20 @@ class RiskTaggerComponent(BaseComponent):
         sentiment_results = inputs["sentiment_results"]
         if not isinstance(sentiment_results, list):
             raise ComponentExecutionError(
-                f"Expected 'sentiment_results' to be a list, got {type(sentiment_results).__name__}."
+                f"Expected 'sentiment_results' to be a list, "
+                f"got {type(sentiment_results).__name__}."
             )
 
         tagged_items: list[dict[str, Any]] = []
-        category_counts: dict[str, int] = {cat: 0 for cat in RISK_CATEGORIES}
+        category_counts: dict[str, int] = dict.fromkeys(RISK_CATEGORIES, 0)
         total_risk_score = 0.0
         critical_alerts: list[str] = []
 
         for idx, item in enumerate(sentiment_results):
             if not isinstance(item, dict):
                 raise ComponentExecutionError(
-                    f"Item at index {idx} in 'sentiment_results' must be a dict, got {type(item).__name__}."
+                    f"Item at index {idx} in 'sentiment_results' must be a dict, "
+                    f"got {type(item).__name__}."
                 )
 
             text = item.get("text", "")
@@ -229,7 +245,9 @@ class RiskTaggerComponent(BaseComponent):
         mean_risk = total_risk_score / max(num_items, 1)
 
         # Determine composite risk level
-        if mean_risk >= 70.0 or any(it["severity"] == "CRITICAL" for it in tagged_items):
+        if mean_risk >= 70.0 or any(
+            it["severity"] == "CRITICAL" for it in tagged_items
+        ):
             overall_level = "CRITICAL" if mean_risk >= 65.0 else "ELEVATED"
         elif mean_risk >= self._risk_threshold:
             overall_level = "ELEVATED"
@@ -250,7 +268,9 @@ class RiskTaggerComponent(BaseComponent):
                 recommended_actions.append(f"[{cat}] {RECOMMENDATIONS[cat]}")
 
         if not recommended_actions:
-            recommended_actions.append("Maintain routine market surveillance and risk monitoring.")
+            recommended_actions.append(
+                "Maintain routine market surveillance and risk monitoring."
+            )
 
         assessment = {
             "composite_risk_score": round(float(mean_risk), 2),
